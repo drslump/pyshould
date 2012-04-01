@@ -1,5 +1,14 @@
+import sys
 from pyshould import *
 from pyshould.expect import *
+
+1 | should_not.equal(2).or_equal(3)
+#1 | should.not_equal(1).or_equal(3)
+
+1 | should_either.equal(2).equal(3).equal(1)
+
+
+1 | should.equal(2).or_equal(1).but_greaterthan(1)
 
 expect(1).to_equal(1)
 expect(1, 3).to_be_less_than(5)

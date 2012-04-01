@@ -7,8 +7,9 @@ __all__ = [
     'should_any',
     'should_all',
     'should_none',
+    'should_either',
     'it',
-    'all',
-    'any',
-    'none',
+    'all_of',
+    'any_of',
+    'none_of',
 ]

@@ -1,25 +1,26 @@
-from .should import Should, ShouldNot, ShouldAll, ShouldAny, ShouldNone
+from .expectation import *
 
 # Create instances to be used with the overloaded | operator
-should = Should(deferred=True)
-should_not = ShouldNot(deferred=True)
-should_all = ShouldAll(deferred=True)
-should_any = ShouldAny(deferred=True)
-should_none = ShouldNone(deferred=True)
+should = Expectation(deferred=True)
+should_not = ExpectationNot(deferred=True)
+should_all = ExpectationAll(deferred=True)
+should_any = ExpectationAny(deferred=True)
+should_none = ExpectationNone(deferred=True)
+should_either = Expectation(deferred=True, def_op=OPERATOR_OR)
 
 
 def it(value):
     """ Wraps a value in a should """
-    return Should(value)
+    return Expectation(value)
 
-def any(value):
+def any_of(value):
     """ At least of the items in value should match """
-    return ShouldAny(value)
+    return ExpectationAny(value)
 
-def all(value):
+def all_of(value):
     """ All the items in value should match """
-    return ShouldAll(value)
+    return ExpectationAll(value)
 
-def none(value):
+def none_of(value):
     """ None of the items in value should match """
-    return ShouldNone(value)
+    return ExpectationNone(value)

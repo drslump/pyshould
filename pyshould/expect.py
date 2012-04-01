@@ -10,10 +10,11 @@ def expect_it(value):
     return pyshould.it(value)
 
 def expect_all(value):
-    return pyshould.all(value)
+    return pyshould.all_of(value)
 
 def expect_any(value):
-    return pyshould.any(value)
+    return pyshould.any_of(value)
 
 def expect_none(value):
-    return pyshould.none(value)
+    return pyshould.none_of(value)
+
