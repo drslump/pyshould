@@ -1,20 +1,29 @@
 from pyshould import *
+from pyshould.expect import *
 
+expect(1).to_equal(1)
+expect(1, 3).to_be_less_than(5)
+expect_it(1).to_be_less_than(3)
+expect_all([3,1]).to_be_less_than(5)
+expect_any([3,1]).to_be_equal_to(1)
+expect_none([3,1]).to_be_equal_to(5)
 
-'a' | should.equal_to('a')
-1 | should.be_less_than(10)
+1 | should.equal(1).lt(10).desc('not equal or less')
 
-it(1).should_be_less_than(10)
-any([10,3]).should_be_less_than(10)
-any_of([10,3]).should_be_less_than(10)
-all([3,3]).should_be_less_than(10)
-all_of([3,3]).should_be_less_than(10)
-none([11,13]).should_be_less_than(10)
-none_of([11,13]).should_be_less_than(10)
+20 | should.equal(20).or_less_than(10)
+1 | should.equal(2).or_less_than(10)
 
-[3,3] | should_all.be_less_than(10)
+#'a' | should.equal('a')
+#1 | should.be_lessthan(10)
 
-1 | should_not.be_equal_to(2)
+#it(1).should_be_less_than(10).equal(2)
+#any([10,3]).should_be_less_than(10)
+#all([3,3]).should_be_less_than(10)
+#none([11,13]).should_be_less_than(10)
+
+#[3,1] | should_all.be_less_than(10)
+
+#1 | should_not.be_equal_to(2)
 
 
 
