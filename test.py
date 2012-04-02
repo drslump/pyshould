@@ -14,7 +14,7 @@ def change_bar():
 
 #1 | should.not_eq(1)
 
-
+foo | should.throw(NameError).Or(TypeError)
 foo | should.throw((NameError, TypeError))
 it(foo).throws(regex='[Ff]oo')
 

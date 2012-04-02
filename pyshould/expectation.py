@@ -30,6 +30,7 @@ class Expectation(object):
         """Resets the state of the expression"""
         self.expr = []
         self.matcher = None
+        self.last_matcher = None
         self.description = None
 
     def __ror__(self, lvalue):
@@ -207,9 +208,10 @@ class Expectation(object):
 
         name = '_'.join(parts)
         if not len(name):
-            name = self.def_matcher
+            name = self.last_matcher or self.def_matcher
 
         self.matcher = self._find_matcher(name)
+        self.last_matcher = name
 
         return self
 
