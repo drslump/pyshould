@@ -17,7 +17,6 @@ def register(matcher, *aliases):
     Register a matcher associated to one or more aliases. Each alias
     given is also normalized.
     """
-    # For each alias given register the matcher
     for alias in aliases:
         matchers[alias] = matcher
         # Map a normalized version of the alias
@@ -148,5 +147,164 @@ register(hc.ends_with,
     'end_with')
 register(hc.starts_with,
     'start_with', 'begin_with')
+
+
+
+from hamcrest.core.base_matcher import BaseMatcher
+
+class TypeMatcher(BaseMatcher):
+    def _matches(self, item):
+        return isinstance(item, self.__class__.types)
+
+    def describe_to(self, description):
+        description.append_text(self.__class__.expected)
+
+    def describe_mismatch(self, item, description):
+        description.append_text('was a %s ' % item.__class__.__name__)
+        description.append_description_of(item)
+
+    @classmethod
+    def __call__(cls, *args, **kwargs):
+        return cls()
+
+class IsInteger(TypeMatcher):
+    types = (int, long)
+    expected = 'an integer'
+
+class IsFloat(TypeMatcher):
+    types = float
+    expected = 'a float'
+
+class IsComplex(TypeMatcher):
+    types = complex
+    expected = 'a complex number'
+
+class IsNumeric(TypeMatcher):
+    types = (int, long, float, complex)
+    expected = 'a numeric type'
+
+class IsString(TypeMatcher):
+    types = basestring
+    expected = 'a string'
+
+class IsStr(TypeMatcher):
+    types = str
+    expected = 'a str'
+
+class IsUnicode(TypeMatcher):
+    types = unicode
+    expected = 'a unicode string'
+
+class IsByteArray(TypeMatcher):
+    types = 'bytearray'
+    expected = 'a bytearray'
+
+class IsBuffer(TypeMatcher):
+    types = 'buffer'
+    expected = 'a buffer'
+
+class IsXrange(TypeMatcher):
+    types = 'xrange'
+    expected = 'an xrange'
+
+class IsDict(TypeMatcher):
+    types = dict
+    expected = 'a dict'
+
+class IsList(TypeMatcher):
+    types = list
+    expected = 'a list'
+
+class IsTuple(TypeMatcher):
+    types = tuple
+    expected = 'a tuple'
+
+class IsSet(TypeMatcher):
+    types = set
+    expected = 'a set'
+
+class IsFrozenSet(TypeMatcher):
+    types = frozenset
+    expected = 'a frozenset'
+
+class IsFunction(TypeMatcher):
+    import types
+    types = types.FunctionType
+    expected = 'a function'
+
+class IsBool(TypeMatcher):
+    types = bool
+    expected = 'a bool'
+
+
+register(IsInteger, 'be_an_integer', 'be_an_int')
+register(IsFloat, 'be_a_float')
+register(IsComplex, 'be_a_complex_number', 'be_a_complex')
+register(IsNumeric, 'be_numeric')
+register(IsString, 'be_a_string')
+register(IsStr, 'be_a_str')
+register(IsUnicode, 'be_an_unicode_string', 'be_an_unicode')
+register(IsByteArray, 'be_a_bytearray', 'be_a_byte_array')
+register(IsBuffer, 'be_a_buffer')
+register(IsXrange, 'be_an_xrange')
+register(IsDict, 'be_a_dictionary', 'be_a_dict')
+register(IsList, 'be_a_list', 'be_an_array')
+register(IsTuple, 'be_a_tuple')
+register(IsSet, 'be_a_set')
+register(IsFrozenSet, 'be_a_frozenset', 'be_a_frozen_set')
+register(IsFunction, 'be_a_function', 'be_a_func')
+register(IsBool, 'be_a_boolean', 'be_a_bool')
+
+
+class IsClass(BaseMatcher):
+    def _matches(self, item):
+        import inspect
+        return inspect.isclass(item)
+
+    def describe_to(self, desc):
+        desc.append_text('a class')
+
+register(IsClass, 'be_a_class')
+
+class IsIterable(BaseMatcher):
+    def _matches(self, item):
+        try:
+            iter(item)
+            return True
+        except TypeError:
+            return False
+
+    def describe_to(self, description):
+        description.append_text('an iterable value')
+
+register(lambda: IsIterable(), 'be_an_iterable')
+
+
+class IsCallable(BaseMatcher):
+    def _matches(self, item):
+        return hasattr(item, '__call__')
+
+    def describe_to(self, desc):
+        desc.append_text('a callable value')
+
+register(lambda: IsCallable(), 'be_callable')
+
+
+class IsTruthy(BaseMatcher):
+    def _matches(self, item):
+        return True if item else False
+
+    def describe_to(self, desc):
+        desc.append_text('a truthy value')
+
+class IsFalsy(BaseMatcher):
+    def _matches(self, item):
+        return True if not item else False
+
+    def describe_to(self, desc):
+        desc.append_text('a falsy value')
+
+register(IsTruthy, 'be_a_truthy_value', 'be_truthy')
+register(IsFalsy, 'be_a_falsy_value', 'be_falsy')
 
 
