@@ -147,6 +147,8 @@ register(hc.ends_with,
     'end_with')
 register(hc.starts_with,
     'start_with', 'begin_with')
+register(hc.anything, 
+    'be_anything')
 
 
 
@@ -306,5 +308,67 @@ class IsFalsy(BaseMatcher):
 
 register(IsTruthy, 'be_a_truthy_value', 'be_truthy')
 register(IsFalsy, 'be_a_falsy_value', 'be_falsy')
+
+
+class RaisesError(BaseMatcher):
+    def __init__(self, expected=None, message=None, regex=None):
+        self.expected = expected
+        self.message = message
+        self.regex = regex
+        self.thrown = None
+
+    def _matches(self, item):
+        if getattr(item, '__getitem__', False):
+            func = item[0]
+            params = item[1:]
+        else:
+            func = item
+            params = []
+
+        self.thrown = None
+        try:
+            func(*params)
+            return False
+        except self.expected:
+            return True
+        except Exception as e:
+            self.thrown = e
+            if self.message:
+                return self.message == str(e)
+            elif self.regex:
+                return re.match(self.regex, str(e)) is not None
+
+            return self.expected is None
+
+    def describe_to(self, desc):
+        if self.thrown and self.message:
+            desc.append_text('to raise an exception with message "%s"' % self.message)
+        elif self.thrown and self.regex:
+            desc.append_text('to raise an exception matching /%s/' % self.regex)
+        else:
+            desc.append_text('to raise an exception')
+            if self.expected:
+                try:
+                    exps = map(lambda(x):x.__name__, self.expected)
+                except:
+                    exps = [self.expected.__name__]
+                desc.append_text(' of type <%s>' % '>, <'.join(exps))
+
+    def describe_mismatch(self, item, desc):
+        if self.thrown:
+            desc.append_text('was ')
+            desc.append_text('<%s>' % self.thrown.__class__.__name__)
+            if self.message or self.regex:
+                desc.append_text(' "%s"' % str(self.thrown))
+        else:
+            desc.append_text('no exception was raised')
+
+register(RaisesError, 
+    'raise_an_error', 'raise_an_exception', 'raises',
+    'throw_an_error', 'throw_an_exception', 'throws', 'throw')
+
+
+
+
 
 

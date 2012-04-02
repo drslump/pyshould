@@ -3,6 +3,15 @@ from pyshould import *
 from pyshould.expect import *
 
 
+def foo():
+    raise TypeError('Foo')
+    pass
+
+foo | should.throw((NameError, TypeError))
+it(foo).throws(regex='[Ff]oo')
+
+
+
 assert 1 | should.be_int
 assert False | should.be_int.And_equal(0)
 
