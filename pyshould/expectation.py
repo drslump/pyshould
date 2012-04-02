@@ -1,5 +1,6 @@
 import re
 import hamcrest as hc
+from .patched import IsNot
 from .matchers import lookup, suggest
 
 
@@ -101,7 +102,7 @@ class Expectation(object):
             if isinstance(token, (int, long)):
                 # Handle the NOT case in a special way since it's unary
                 if token == OPERATOR_NOT:
-                    stack[-1] = hc.is_not(stack[-1])
+                    stack[-1] = IsNot(stack[-1])
                     continue
 
                 # Our operators always need two operands
@@ -230,7 +231,7 @@ class ExpectationNot(Expectation):
     Negates the result of the matcher
     """
     def _assertion(self, matcher, value):
-        hc.assert_that(value, hc.is_not(matcher))
+        hc.assert_that(value, IsNot(matcher))
 
 class ExpectationAny(Expectation):
     """
@@ -251,6 +252,6 @@ class ExpectationNone(Expectation):
     Succeeds if none of the items in an iterable value pass the matcher
     """
     def _assertion(self, matcher, value):
-        hc.assert_that(value, hc.is_not(hc.has_item(matcher)))
+        hc.assert_that(value, IsNot(hc.has_item(matcher)))
 
 
