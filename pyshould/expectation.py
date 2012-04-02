@@ -145,11 +145,11 @@ class Expectation(object):
 
         return matcher
 
-    def _init_matcher(self, *args):
+    def _init_matcher(self, *args, **kwargs):
         if not self.matcher:
             raise TypeError('No matchers set. Usage: <value> | should.<matcher>(<expectation>)')
 
-        matcher = self.matcher(*args)
+        matcher = self.matcher(*args, **kwargs)
         self.expr.append(matcher)
         self.matcher = None
 
@@ -219,7 +219,7 @@ class Expectation(object):
         it'll be done in the __ror__ overload.
         """
         # Initialize the last matcher
-        self._init_matcher(*args)
+        self._init_matcher(*args, **kwargs)
 
         return self
 
