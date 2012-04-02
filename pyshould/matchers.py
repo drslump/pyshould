@@ -96,7 +96,7 @@ def suggest(alias, max=3, cutoff=0.5):
 # like 'to', 'be' or 'is' are ignored in the comparison.
 
 register(hc.equal_to,
-    'be_equal_to', 'be_eql_to', 'be_eq_to')
+    'be_equal_to', 'be_equals_to', 'be_eql_to', 'be_eq_to')
 register(hc.instance_of,
     'be_an_instance_of', 'be_a', 'be_an')
 register(hc.same_instance,
@@ -366,8 +366,10 @@ class RaisesError(BaseMatcher):
 
 
 register(RaisesError, 
-    'raise_an_error', 'raise_an_exception', 'raises',
-    'throw_an_error', 'throw_an_exception', 'throws', 'throw')
+    'raise_an_error', 'raise_an_exception', 
+    'raises_an_error', 'raises_an_exception', 'raises', 'raise',
+    'throw_an_error', 'throw_an_exception', 
+    'throws_an_error', 'throws_an_exception', 'throws', 'throw')
 
 
 from copy import deepcopy
