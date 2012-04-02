@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='pyshould',
     version='0.1.0',
-    url='',
+    url='https://github.com/drslump/pyshould',
     author='Iván -DrSlump- Montes',
     author_email='drslump@pollinimini.net',
     packages = find_packages(),
