@@ -27,6 +27,7 @@ class Expectation(object):
     def reset(self):
         """Resets the state of the expression"""
         self.expr = []
+        self.matcher = None
         self.description = None
 
     def __ror__(self, lvalue):
@@ -41,7 +42,12 @@ class Expectation(object):
     def resolve(self, value = None):
         """Resolve the current expression against the supplied value"""
 
-        # More than one matcher is combined with an AND
+        # If we still have an uninitialized matcher init it now
+        if self.matcher:
+            self.expr.append(self.matcher())
+            self.matcher = None
+
+        # Evaluate the current set of matchers forming the expression
         matcher = self._evaluate()
 
         # If a description has been given include it in the matcher
@@ -138,6 +144,19 @@ class Expectation(object):
 
         return matcher
 
+    def _init_matcher(self, *args):
+        if not self.matcher:
+            raise TypeError('No matchers set. Usage: <value> | should.<matcher>(<expectation>)')
+
+        matcher = self.matcher(*args)
+        self.expr.append(matcher)
+        self.matcher = None
+
+        if not self.deferred:
+            self.resolve(self.value)
+
+        return matcher
+
     def described_as(self, description, *args):
         """
         Specify a custom message for the matcher
@@ -154,6 +173,10 @@ class Expectation(object):
         """
         Overload property access to interpret them as matchers.
         """
+
+        # If we still have an uninitialized matcher init it now
+        if self.matcher:
+            self._init_matcher()
 
         # Normalize the name to split by underscore
         name = re.sub(r'([a-z])([A-Z])', r'\1_\2', name)
@@ -176,8 +199,7 @@ class Expectation(object):
             self.expr.append(self.def_op)
 
         name = '_'.join(parts)
-        matcher = self._find_matcher(name)
-        self.expr.append(matcher)
+        self.matcher = self._find_matcher(name)
 
         return self
 
@@ -187,19 +209,11 @@ class Expectation(object):
         arguments. If we're in deferred mode we don't resolve the matcher yet,
         it'll be done in the __ror__ overload.
         """
-
-        if not len(self.expr):
-            raise TypeError('No matchers set. Usage: <value> | should.<matcher>(<expectation>)')
-
-        # Replace the last matcher by the result of executing it
-        matcher = self.expr.pop()
-        matcher = matcher(*args)
-        self.expr.append(matcher)
-
-        if not self.deferred:
-            self.resolve(self.value)
+        # Initialize the last matcher
+        self._init_matcher(*args)
 
         return self
+
 
 
 class ExpectationNot(Expectation):
