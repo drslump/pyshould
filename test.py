@@ -3,12 +3,16 @@ from pyshould import *
 from pyshould.expect import *
 
 
+assert 1 | should.be_int
+assert False | should.be_int.And_equal(0)
+
+
 '1' | should.be_a_string
 [] | should.be_a_dict.or_an_array()
 (1,) | should.be_a_tuple()
 1 | should.be_an_int()
 
-1 | should.be_truthy
+1 | should.be_truthy.and_not(2)
 
 it(1).truthy.integer.eq(1)
 
@@ -19,7 +23,7 @@ it(1).truthy.integer.eq(1)
 1 | should_either.equal(2).equal(3).equal(1)
 
 
-1 | should.equal(2).or_equal(1).but_greaterthan(0)
+1 | should.equal(2).Or_equal(1).But_greaterthan(0)
 
 expect(1).to_equal(1)
 expect(1, 3).to_be_less_than(5)

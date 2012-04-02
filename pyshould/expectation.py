@@ -17,12 +17,13 @@ class Expectation(object):
     finally resolving it.
     """
 
-    def __init__(self, value=None, deferred=False, description=None, def_op = OPERATOR_AND):
+    def __init__(self, value=None, deferred=False, description=None, def_op = OPERATOR_AND, def_matcher = 'equal'):
         self.reset()
         self.value = value
         self.deferred = deferred
         self.description = description
         self.def_op = def_op
+        self.def_matcher = def_matcher
 
     def reset(self):
         """Resets the state of the expression"""
@@ -198,7 +199,15 @@ class Expectation(object):
         elif len(self.expr):
             self.expr.append(self.def_op)
 
+        # Negation can come just after a combinator (ie: .and_not_be_equal)
+        if len(parts) and parts[0] == 'not':
+            self.expr.append(OPERATOR_NOT)
+            parts.pop(0)
+
         name = '_'.join(parts)
+        if not len(name):
+            name = self.def_matcher
+
         self.matcher = self._find_matcher(name)
 
         return self
