@@ -318,7 +318,8 @@ class RaisesError(BaseMatcher):
         self.thrown = None
 
     def _matches(self, item):
-        if getattr(item, '__getitem__', False):
+        # support passing arguments by feeding a tuple instead of a callable
+        if not callable(item) and getattr(item, '__getitem__', False):
             func = item[0]
             params = item[1:]
         else:
@@ -363,12 +364,70 @@ class RaisesError(BaseMatcher):
         else:
             desc.append_text('no exception was raised')
 
+
 register(RaisesError, 
     'raise_an_error', 'raise_an_exception', 'raises',
     'throw_an_error', 'throw_an_exception', 'throws', 'throw')
 
 
+from copy import deepcopy
+class Changes(BaseMatcher):
+    def __init__(self, watcher):
+        self.watcher = watcher
+        self.before = None
+        self.after = None
+        self.changed = False
+
+    def _matches(self, item):
+        # support passing arguments by feeding a tuple instead of a callable
+        if not callable(item) and getattr(item, '__getitem__', False):
+            func = item[0]
+            params = item[1:]
+        else:
+            func = item
+            params = []
+
+        try:
+            before = self.watcher()
+        except TypeError:
+            before = self.watcher
+
+        # keep a snapshot of the value in case it's mutable
+        self.before = deepcopy(before)
+
+        func(*params)
+
+        try:
+            self.after = self.watcher()
+        except TypeError:
+            self.after = self.watcher
+
+        try:
+            hc.assert_that(self.after, hc.equal_to(self.before))
+            self.changed = False
+        except AssertionError:
+            self.changed = True
+
+        return self.changed
+        
+    def describe_to(self, desc):
+        desc.append_text('change something')
+
+    def describe_mismatch(self, item, desc):
+        # To support its proper use when negated we need to check if
+        # the values actually changed or not
+        if self.changed:
+            desc.append_text('did change from ') \
+                .append_value(self.before) \
+                .append_text(' to ') \
+                .append_value(self.after)
+        else:
+            desc.append_text('it didn\'t change from ') \
+                .append_value(self.before)
+
+register(Changes,
+    'change', 'changes', 'modify', 'modifies')
 
 
-
+    
 

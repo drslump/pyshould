@@ -7,8 +7,20 @@ def foo():
     raise TypeError('Foo')
     pass
 
+bar = [0]
+def change_bar():
+    global bar
+    bar.append(1)
+
+#1 | should.not_eq(1)
+
+
 foo | should.throw((NameError, TypeError))
 it(foo).throws(regex='[Ff]oo')
+
+(lambda:foo()) | should.throw(TypeError)
+
+change_bar | should.not_change(lambda:bar)
 
 
 
