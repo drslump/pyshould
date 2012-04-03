@@ -104,7 +104,7 @@ register(hc.has_key,
 register(hc.has_value,
     'have_the_value', 'contain_the_value')
 register(hc.is_in,
-    'be_in')
+    'be_in', 'be_into', 'be_contained_in')
 register(hc.has_item,
     'have_the_item', 'contain_the_item')
 register(hc.has_items,
