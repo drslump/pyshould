@@ -283,6 +283,15 @@ class IsCallable(BaseMatcher):
 
 register(IsCallable, 'be_callable')
 
+class IsNone(BaseMatcher):
+    def _matches(self, item):
+        return True if item is None else False
+
+    def describe_to(self, desc):
+        desc.append_text('a None value')
+
+register(IsNone, 'be_none')
+
 
 class IsTruthy(BaseMatcher):
     def _matches(self, item):
