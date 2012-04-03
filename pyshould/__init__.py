@@ -1,3 +1,7 @@
+"""
+pyshould - a should style wrapper for pyhamcrest
+"""
+
 from pyshould.dsl import *
 
 # Override the list of available names to just the minimum DSL

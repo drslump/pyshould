@@ -1,3 +1,7 @@
+"""
+Define the names making up the domain specific language
+"""
+
 from .expectation import *
 
 # Create instances to be used with the overloaded | operator
@@ -14,7 +18,7 @@ def it(value):
     return Expectation(value)
 
 def any_of(value):
-    """ At least of the items in value should match """
+    """ At least one of the items in value should match """
     return ExpectationAny(value)
 
 def all_of(value):

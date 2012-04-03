@@ -1,6 +1,9 @@
+"""
+Defines the registry of matchers and the standard set of matchers
+"""
+
 import re
 from difflib import get_close_matches
-
 import hamcrest as hc
 
 # Words to ignore when looking up matchers
@@ -13,10 +16,8 @@ normalized = {}
 
 
 def register(matcher, *aliases):
-    """
-    Register a matcher associated to one or more aliases. Each alias
-    given is also normalized.
-    """
+    """Register a matcher associated to one or more aliases. Each alias
+    given is also normalized."""
     for alias in aliases:
         matchers[alias] = matcher
         # Map a normalized version of the alias
@@ -27,9 +28,7 @@ def register(matcher, *aliases):
         normalized[norm] = alias
 
 def unregister(matcher):
-    """
-    Unregister a matcher (or alias) from the registry
-    """
+    """Unregister a matcher (or alias) from the registry"""
 
     # If it's a string handle it like an alias
     if isinstance(matcher, basestring) and matcher in matchers:
@@ -47,9 +46,7 @@ def unregister(matcher):
     return len(aliases) > 0
 
 def normalize(alias):
-    """
-    Normalizes an alias by removing adverbs defined in IGNORED_WORDS
-    """
+    """Normalizes an alias by removing adverbs defined in IGNORED_WORDS"""
 
     # Convert from CamelCase to snake_case
     alias = re.sub(r'([a-z])([A-Z])', r'\1_\2', alias)
@@ -59,11 +56,9 @@ def normalize(alias):
     return '_'.join(words)
 
 def lookup(alias):
-    """
-    Tries to find a matcher callable associated to the given alias. If
+    """Tries to find a matcher callable associated to the given alias. If
     an exact match does not exists it will try normalizing it and even
-    removing underscores to find one.
-    """
+    removing underscores to find one."""
 
     if alias in matchers:
         return matchers[alias]
@@ -81,9 +76,7 @@ def lookup(alias):
     return None
 
 def suggest(alias, max=3, cutoff=0.5):
-    """
-    Suggest a list of aliases which are similar enough
-    """
+    """Suggest a list of aliases which are similar enough"""
 
     list = matchers.keys()
     similar = get_close_matches(alias, list, n=max, cutoff=cutoff)
@@ -238,6 +231,14 @@ class IsBool(TypeMatcher):
     types = bool
     expected = 'a bool'
 
+class IsClass(BaseMatcher):
+    def _matches(self, item):
+        import inspect
+        return inspect.isclass(item)
+
+    def describe_to(self, desc):
+        desc.append_text('a class')
+
 
 register(IsInteger, 'be_an_integer', 'be_an_int')
 register(IsFloat, 'be_a_float')
@@ -256,17 +257,8 @@ register(IsSet, 'be_a_set')
 register(IsFrozenSet, 'be_a_frozenset', 'be_a_frozen_set')
 register(IsFunction, 'be_a_function', 'be_a_func')
 register(IsBool, 'be_a_boolean', 'be_a_bool')
-
-
-class IsClass(BaseMatcher):
-    def _matches(self, item):
-        import inspect
-        return inspect.isclass(item)
-
-    def describe_to(self, desc):
-        desc.append_text('a class')
-
 register(IsClass, 'be_a_class')
+
 
 class IsIterable(BaseMatcher):
     def _matches(self, item):
@@ -279,7 +271,7 @@ class IsIterable(BaseMatcher):
     def describe_to(self, description):
         description.append_text('an iterable value')
 
-register(lambda: IsIterable(), 'be_an_iterable')
+register(IsIterable, 'be_an_iterable')
 
 
 class IsCallable(BaseMatcher):
@@ -289,7 +281,7 @@ class IsCallable(BaseMatcher):
     def describe_to(self, desc):
         desc.append_text('a callable value')
 
-register(lambda: IsCallable(), 'be_callable')
+register(IsCallable, 'be_callable')
 
 
 class IsTruthy(BaseMatcher):
@@ -364,7 +356,6 @@ class RaisesError(BaseMatcher):
         else:
             desc.append_text('no exception was raised')
 
-
 register(RaisesError, 
     'raise_an_error', 'raise_an_exception', 
     'raises_an_error', 'raises_an_exception', 'raises', 'raise',
@@ -429,7 +420,4 @@ class Changes(BaseMatcher):
 
 register(Changes,
     'change', 'changes', 'modify', 'modifies')
-
-
-    
 

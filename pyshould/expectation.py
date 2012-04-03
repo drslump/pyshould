@@ -1,3 +1,7 @@
+"""
+Defines the expectation class which is the basis for performing the assertions.
+"""
+
 import re
 import hamcrest as hc
 from .patched import IsNot
@@ -13,8 +17,7 @@ OPERATOR_BUT = 1
 
 
 class Expectation(object):
-    """
-    Represents an expectation allowing to configure it with matchers and
+    """Represents an expectation allowing to configure it with matchers and
     finally resolving it.
     """
 
@@ -34,8 +37,7 @@ class Expectation(object):
         self.description = None
 
     def __ror__(self, lvalue):
-        """
-        Evaluate against the left hand side of the OR (pipe) operator. Since in
+        """Evaluate against the left hand side of the OR (pipe) operator. Since in
         Python this operator has a fairly low precedence this method will be
         called once the whole right hand side has been evaluated.
         """
@@ -67,15 +69,13 @@ class Expectation(object):
             self.reset()
 
     def _assertion(self, matcher, value):
-        """
-        Perform the actual assertion for the given matcher and value. Override
+        """Perform the actual assertion for the given matcher and value. Override
         this method to apply a special configuration when performing the assertion.
         """
         hc.assert_that(value, matcher)
 
     def _evaluate(self):
-        """
-        Converts the current expression into a single matcher, applying
+        """Converts the current expression into a single matcher, applying
         coordination operators to operands according to their binding rules
         """
 
@@ -127,8 +127,7 @@ class Expectation(object):
 
 
     def _find_matcher(self, alias):
-        """
-        Finds a matcher based on the given alias or raises an error if no
+        """Finds a matcher based on the given alias or raises an error if no
         matcher could be found.
         """
         matcher = lookup(alias)
@@ -161,9 +160,7 @@ class Expectation(object):
         return matcher
 
     def described_as(self, description, *args):
-        """
-        Specify a custom message for the matcher
-        """
+        """Specify a custom message for the matcher"""
         self.description = description.format(*args)
         return self 
 
@@ -173,9 +170,7 @@ class Expectation(object):
 
 
     def __getattr__(self, name):
-        """
-        Overload property access to interpret them as matchers.
-        """
+        """Overload property access to interpret them as matchers."""
 
         # If we still have an uninitialized matcher init it now
         if self.matcher:
@@ -216,8 +211,7 @@ class Expectation(object):
         return self
 
     def __call__(self, *args, **kwargs):
-        """
-        Execute the matcher just registered by __getattr__ passing any given
+        """Execute the matcher just registered by __getattr__ passing any given
         arguments. If we're in deferred mode we don't resolve the matcher yet,
         it'll be done in the __ror__ overload.
         """
@@ -229,30 +223,26 @@ class Expectation(object):
 
 
 class ExpectationNot(Expectation):
-    """
-    Negates the result of the matcher
-    """
+    """Negates the result of the matcher"""
+
     def _assertion(self, matcher, value):
         hc.assert_that(value, IsNot(matcher))
 
 class ExpectationAny(Expectation):
-    """
-    Succeeds if any of the items in an iterable value passes the matcher
-    """
+    """Succeeds if any of the items in an iterable value passes the matcher"""
+
     def _assertion(self, matcher, value):
         hc.assert_that(value, hc.has_item(matcher))
 
 class ExpectationAll(Expectation):
-    """
-    Succeeds if all of the items in an iterable value pass the matcher
-    """
+    """Succeeds if all of the items in an iterable value pass the matcher"""
+
     def _assertion(self, matcher, value):
         hc.assert_that(value, hc.only_contains(matcher))
 
 class ExpectationNone(Expectation):
-    """
-    Succeeds if none of the items in an iterable value pass the matcher
-    """
+    """Succeeds if none of the items in an iterable value pass the matcher"""
+
     def _assertion(self, matcher, value):
         hc.assert_that(value, IsNot(hc.has_item(matcher)))
 
