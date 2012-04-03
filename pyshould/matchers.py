@@ -288,10 +288,24 @@ class IsNone(BaseMatcher):
         return True if item is None else False
 
     def describe_to(self, desc):
-        desc.append_text('a None value')
+        desc.append_text('a None')
 
 register(IsNone, 'be_none')
 
+
+class IsTrue(BaseMatcher):
+    def _matches(self, item):
+        return item == True
+
+    def describe_to(self, desc):
+        desc.append_text('a True')
+
+class IsFalse(BaseMatcher):
+    def _matches(self, item):
+        return item == False
+
+    def describe_to(self, desc):
+        desc.append_text('a False')
 
 class IsTruthy(BaseMatcher):
     def _matches(self, item):
@@ -307,6 +321,8 @@ class IsFalsy(BaseMatcher):
     def describe_to(self, desc):
         desc.append_text('a falsy value')
 
+register(IsTrue, 'be_true')
+register(IsFalse, 'be_false')
 register(IsTruthy, 'be_a_truthy_value', 'be_truthy')
 register(IsFalsy, 'be_a_falsy_value', 'be_falsy')
 
