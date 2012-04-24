@@ -61,6 +61,7 @@ class Expectation(object):
 
         try:
             self._assertion(matcher, value)
+
         except AssertionError as ex:
             # By re-raising here the exception we reset the traceback
             raise ex
@@ -73,7 +74,15 @@ class Expectation(object):
             this method to apply a special configuration when performing the assertion.
             If the assertion fails it should raise an AssertionError.
         """
-        hc.assert_that(value, matcher)
+
+        # To support the syntax `any_of(subject) | should ...` we check if the
+        # value to check is an Expection object and if it is we use the descriptor
+        # protocol to bind the value's assertion logic to this expectation.
+        if isinstance(value, Expectation):
+            assertion = value._assertion.__get__(self, Expectation)
+            assertion(matcher, value.value)
+        else:
+            hc.assert_that(value, matcher)
 
     def _evaluate(self):
         """ Converts the current expression into a single matcher, applying
@@ -199,6 +208,7 @@ class Expectation(object):
         if len(parts) and parts[0] == 'not':
             self.expr.append(OPERATOR_NOT)
             parts.pop(0)
+
 
         if len(parts):
             name = '_'.join(parts)
