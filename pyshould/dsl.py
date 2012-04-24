@@ -21,14 +21,26 @@ def it(value):
     """ Wraps a value in an exepctation """
     return Expectation(value)
 
-def any_of(value):
+def any_of(value, *args):
     """ At least one of the items in value should match """
+
+    if len(args):
+        value = (value,) + args
+
     return ExpectationAny(value)
 
-def all_of(value):
+def all_of(value, *args):
     """ All the items in value should match """
+
+    if len(args):
+        value = (value,) + args
+
     return ExpectationAll(value)
 
-def none_of(value):
+def none_of(value, *args):
     """ None of the items in value should match """
+
+    if len(args):
+        value = (value,) + args
+
     return ExpectationNone(value)
