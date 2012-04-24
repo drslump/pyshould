@@ -4,7 +4,7 @@ setup(
     name='pyshould',
     version='0.1.0',
     url='https://github.com/drslump/pyshould',
-    author='Iván -DrSlump- Montes',
+    author='Ivan -DrSlump- Montes',
     author_email='drslump@pollinimini.net',
     packages = find_packages(),
     include_package_data = True,
