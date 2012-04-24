@@ -2,7 +2,6 @@ import sys
 from pyshould import *
 from pyshould.expect import *
 
-
 def foo():
     raise TypeError('Foo')
     pass
@@ -20,7 +19,8 @@ it(foo).throws(regex='[Ff]oo')
 
 (lambda:foo()) | should.throw(TypeError)
 
-change_bar | should.not_change(lambda:bar)
+#change_bar | should.not_change(bar)
+#change_bar | should.not_change(lambda:bar)
 
 
 
@@ -33,7 +33,7 @@ assert False | should.be_int.And_equal(0)
 (1,) | should.be_a_tuple()
 1 | should.be_an_int()
 
-1 | should.be_truthy.and_not(2)
+1 | should.be_truthy.and_not_eq(2)
 
 it(1).truthy.integer.eq(1)
 

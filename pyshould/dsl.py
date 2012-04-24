@@ -2,7 +2,11 @@
 Define the names making up the domain specific language
 """
 
-from .expectation import *
+from .expectation import (
+        Expectation, ExpectationNot,
+        ExpectationAll, ExpectationAny,
+        ExpectationNone, OPERATOR_OR
+)
 
 # Create instances to be used with the overloaded | operator
 should = Expectation(deferred=True)
@@ -14,7 +18,7 @@ should_either = Expectation(deferred=True, def_op=OPERATOR_OR)
 
 
 def it(value):
-    """ Wraps a value in a should """
+    """ Wraps a value in an exepctation """
     return Expectation(value)
 
 def any_of(value):

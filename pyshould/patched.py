@@ -5,7 +5,7 @@ Overrides for external libraries
 from hamcrest.core.core.isnot import IsNot as orig_IsNot
 
 class IsNot(orig_IsNot):
-    """Extends the IsNot matcher to improve its mismatch message"""
+    """ Extends the IsNot matcher to improve its mismatch message """
 
     def describe_mismatch(self, item, desc):
         if getattr(self.matcher, 'describe_mismatch', None):

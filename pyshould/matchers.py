@@ -16,8 +16,9 @@ normalized = {}
 
 
 def register(matcher, *aliases):
-    """Register a matcher associated to one or more aliases. Each alias
-    given is also normalized."""
+    """ Register a matcher associated to one or more aliases. Each alias
+        given is also normalized.
+    """
     for alias in aliases:
         matchers[alias] = matcher
         # Map a normalized version of the alias
@@ -28,7 +29,8 @@ def register(matcher, *aliases):
         normalized[norm] = alias
 
 def unregister(matcher):
-    """Unregister a matcher (or alias) from the registry"""
+    """ Unregister a matcher (or alias) from the registry
+    """
 
     # If it's a string handle it like an alias
     if isinstance(matcher, basestring) and matcher in matchers:
@@ -46,19 +48,20 @@ def unregister(matcher):
     return len(aliases) > 0
 
 def normalize(alias):
-    """Normalizes an alias by removing adverbs defined in IGNORED_WORDS"""
-
+    """ Normalizes an alias by removing adverbs defined in IGNORED_WORDS
+    """
     # Convert from CamelCase to snake_case
     alias = re.sub(r'([a-z])([A-Z])', r'\1_\2', alias)
     # Ignore words
     words = alias.lower().split('_')
-    words = filter(lambda(x): x not in IGNORED_WORDS, words)
+    words = filter(lambda w: w not in IGNORED_WORDS, words)
     return '_'.join(words)
 
 def lookup(alias):
-    """Tries to find a matcher callable associated to the given alias. If
+    """ Tries to find a matcher callable associated to the given alias. If
     an exact match does not exists it will try normalizing it and even
-    removing underscores to find one."""
+    removing underscores to find one.
+    """
 
     if alias in matchers:
         return matchers[alias]
@@ -76,10 +79,11 @@ def lookup(alias):
     return None
 
 def suggest(alias, max=3, cutoff=0.5):
-    """Suggest a list of aliases which are similar enough"""
+    """ Suggest a list of aliases which are similar enough
+    """
 
-    list = matchers.keys()
-    similar = get_close_matches(alias, list, n=max, cutoff=cutoff)
+    aliases = matchers.keys()
+    similar = get_close_matches(alias, aliases, n=max, cutoff=cutoff)
 
     return similar
 
@@ -261,6 +265,7 @@ register(IsClass, 'be_a_class')
 
 
 class IsIterable(BaseMatcher):
+    """ Checks if a value is iterable """
     def _matches(self, item):
         try:
             iter(item)
@@ -275,25 +280,28 @@ register(IsIterable, 'be_an_iterable')
 
 
 class IsCallable(BaseMatcher):
+    """ Check if a value is callable """
     def _matches(self, item):
         return hasattr(item, '__call__')
 
     def describe_to(self, desc):
         desc.append_text('a callable value')
 
-register(IsCallable, 'be_callable')
+register(IsCallable, 'be_callable', 'be_a_callable_value', 'can_be_called')
 
 class IsNone(BaseMatcher):
+    """ Check if a value is None """
     def _matches(self, item):
         return True if item is None else False
 
     def describe_to(self, desc):
         desc.append_text('a None')
 
-register(IsNone, 'be_none')
+register(IsNone, 'be_none', 'be_a_none_value')
 
 
 class IsTrue(BaseMatcher):
+    """ Check if a value is True """
     def _matches(self, item):
         return item == True
 
@@ -301,6 +309,7 @@ class IsTrue(BaseMatcher):
         desc.append_text('a True')
 
 class IsFalse(BaseMatcher):
+    """ Check if a value is False """
     def _matches(self, item):
         return item == False
 
@@ -308,6 +317,7 @@ class IsFalse(BaseMatcher):
         desc.append_text('a False')
 
 class IsTruthy(BaseMatcher):
+    """ Check if a value is truthy """
     def _matches(self, item):
         return True if item else False
 
@@ -315,6 +325,7 @@ class IsTruthy(BaseMatcher):
         desc.append_text('a truthy value')
 
 class IsFalsy(BaseMatcher):
+    """ Check if a value is falsy """
     def _matches(self, item):
         return True if not item else False
 
@@ -328,6 +339,8 @@ register(IsFalsy, 'be_a_falsy_value', 'be_falsy')
 
 
 class RaisesError(BaseMatcher):
+    """ Checks if calling the value raises an error """
+
     def __init__(self, expected=None, message=None, regex=None):
         self.expected = expected
         self.message = message
@@ -390,6 +403,8 @@ register(RaisesError,
 
 from copy import deepcopy
 class Changes(BaseMatcher):
+    """ Checks if calling a value changes something """
+
     def __init__(self, watcher):
         self.watcher = watcher
         self.before = None

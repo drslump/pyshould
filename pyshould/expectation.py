@@ -17,11 +17,12 @@ OPERATOR_BUT = 1
 
 
 class Expectation(object):
-    """Represents an expectation allowing to configure it with matchers and
-    finally resolving it.
+    """ Represents an expectation allowing to configure it with matchers and
+        finally resolving it.
     """
 
-    def __init__(self, value=None, deferred=False, description=None, def_op = OPERATOR_AND, def_matcher = 'equal'):
+    def __init__(self, value=None, deferred=False, description=None, 
+                 def_op = OPERATOR_AND, def_matcher = 'equal'):
         self.reset()
         self.value = value
         self.deferred = deferred
@@ -30,27 +31,26 @@ class Expectation(object):
         self.def_matcher = def_matcher
 
     def reset(self):
-        """Resets the state of the expression"""
+        """ Resets the state of the expression """
         self.expr = []
         self.matcher = None
         self.last_matcher = None
         self.description = None
 
     def __ror__(self, lvalue):
-        """Evaluate against the left hand side of the OR (pipe) operator. Since in
-        Python this operator has a fairly low precedence this method will be
-        called once the whole right hand side has been evaluated.
+        """ Evaluate against the left hand side of the OR (pipe) operator. Since in
+            Python this operator has a fairly low precedence this method will usually 
+            be called once the whole right hand side of the expression has been evaluated.
         """
         self.resolve(lvalue)
         return self
 
     def resolve(self, value = None):
-        """Resolve the current expression against the supplied value"""
+        """ Resolve the current expression against the supplied value """
 
         # If we still have an uninitialized matcher init it now
         if self.matcher:
-            self.expr.append(self.matcher())
-            self.matcher = None
+            self._init_matcher()
 
         # Evaluate the current set of matchers forming the expression
         matcher = self._evaluate()
@@ -69,20 +69,22 @@ class Expectation(object):
             self.reset()
 
     def _assertion(self, matcher, value):
-        """Perform the actual assertion for the given matcher and value. Override
-        this method to apply a special configuration when performing the assertion.
+        """ Perform the actual assertion for the given matcher and value. Override
+            this method to apply a special configuration when performing the assertion.
+            If the assertion fails it should raise an AssertionError.
         """
         hc.assert_that(value, matcher)
 
     def _evaluate(self):
-        """Converts the current expression into a single matcher, applying
-        coordination operators to operands according to their binding rules
+        """ Converts the current expression into a single matcher, applying
+            coordination operators to operands according to their binding rules
         """
 
         # Apply Shunting Yard algorithm to convert the infix expression
         # into Reverse Polish Notation. Since we have a very limited
         # set of operators and binding rules, the implementation becomes
-        # really simple
+        # really simple. The expression is formed of hamcrest matcher instances 
+        # and operators identifiers (ints).
         ops = []
         rpn = []
         for token in self.expr:
@@ -97,7 +99,7 @@ class Expectation(object):
         while len(ops):
             rpn.append(ops.pop())
 
-        # Walk the RPN expression to create AnyOf and AllOf matchers
+        # Walk the RPN expression to create AllOf/AnyOf matchers
         stack = []
         for token in rpn:
             if isinstance(token, (int, long)):
@@ -127,8 +129,8 @@ class Expectation(object):
 
 
     def _find_matcher(self, alias):
-        """Finds a matcher based on the given alias or raises an error if no
-        matcher could be found.
+        """ Finds a matcher based on the given alias or raises an error if no
+            matcher could be found.
         """
         matcher = lookup(alias)
         if not matcher:
@@ -147,20 +149,14 @@ class Expectation(object):
         return matcher
 
     def _init_matcher(self, *args, **kwargs):
-        if not self.matcher:
-            raise TypeError('No matchers set. Usage: <value> | should.<matcher>(<expectation>)')
-
+        """ Executes the current matcher appending it to the expression """
         matcher = self.matcher(*args, **kwargs)
         self.expr.append(matcher)
         self.matcher = None
-
-        if not self.deferred:
-            self.resolve(self.value)
-
         return matcher
 
     def described_as(self, description, *args):
-        """Specify a custom message for the matcher"""
+        """ Specify a custom message for the matcher """
         self.description = description.format(*args)
         return self 
 
@@ -170,11 +166,14 @@ class Expectation(object):
 
 
     def __getattr__(self, name):
-        """Overload property access to interpret them as matchers."""
+        """ Overload property access to interpret them as matchers. """
 
         # If we still have an uninitialized matcher init it now
         if self.matcher:
             self._init_matcher()
+            # In deferred mode we will resolve in the __ror__ overload
+            if not self.deferred:
+                self.resolve(self.value)
 
         # Normalize the name to split by underscore
         name = re.sub(r'([a-z])([A-Z])', r'\1_\2', name)
@@ -201,8 +200,9 @@ class Expectation(object):
             self.expr.append(OPERATOR_NOT)
             parts.pop(0)
 
-        name = '_'.join(parts)
-        if not len(name):
+        if len(parts):
+            name = '_'.join(parts)
+        else:
             name = self.last_matcher or self.def_matcher
 
         self.matcher = self._find_matcher(name)
@@ -211,37 +211,43 @@ class Expectation(object):
         return self
 
     def __call__(self, *args, **kwargs):
-        """Execute the matcher just registered by __getattr__ passing any given
-        arguments. If we're in deferred mode we don't resolve the matcher yet,
-        it'll be done in the __ror__ overload.
+        """ Execute the matcher just registered by __getattr__ passing any given
+            arguments. If we're in deferred mode we don't resolve the matcher yet,
+            it'll be done in the __ror__ overload.
         """
-        # Initialize the last matcher
+        if not self.matcher:
+            raise TypeError('No matchers set. Usage: <value> | should.<matcher>(<expectation>)')
+
         self._init_matcher(*args, **kwargs)
+
+        # In deferred mode we will resolve in the __ror__ overload
+        if not self.deferred:
+            self.resolve(self.value)
 
         return self
 
 
 
 class ExpectationNot(Expectation):
-    """Negates the result of the matcher"""
+    """ Negates the result of the matcher """
 
     def _assertion(self, matcher, value):
         hc.assert_that(value, IsNot(matcher))
 
 class ExpectationAny(Expectation):
-    """Succeeds if any of the items in an iterable value passes the matcher"""
+    """ Succeeds if any of the items in an iterable value passes the matcher """
 
     def _assertion(self, matcher, value):
         hc.assert_that(value, hc.has_item(matcher))
 
 class ExpectationAll(Expectation):
-    """Succeeds if all of the items in an iterable value pass the matcher"""
+    """ Succeeds if all of the items in an iterable value pass the matcher """
 
     def _assertion(self, matcher, value):
         hc.assert_that(value, hc.only_contains(matcher))
 
 class ExpectationNone(Expectation):
-    """Succeeds if none of the items in an iterable value pass the matcher"""
+    """ Succeeds if none of the items in an iterable value passes the matcher """
 
     def _assertion(self, matcher, value):
         hc.assert_that(value, IsNot(hc.has_item(matcher)))
