@@ -1,3 +1,5 @@
+# encoding: utf8
+
 import sys
 from pyshould import *
 from pyshould.expect import *
@@ -50,8 +52,8 @@ expect(1).to_equal(1)
 expect(1, 3).to_be_less_than(5)
 expect_it(1).to_be_less_than(3)
 expect_all([3,1]).to_be_less_than(5)
-expect_any([3,1]).to_be_equal_to(1)
-expect_none([3,1]).to_be_equal_to(5)
+expect_any(3,1).to_be_equal_to(1)
+expect_none(3,1).to_be_equal_to(5)
 
 1 | should.equal(1).lt(10).desc('not equal or less')
 
@@ -62,11 +64,25 @@ expect_none([3,1]).to_be_equal_to(5)
 #1 | should.be_lessthan(10)
 
 it(1).should_be_less_than(10).equal(1)
-any_of([10,3]).should_be_less_than(10)
-all_of([3,3]).should_be_less_than(10)
-none_of([11,13]).should_be_less_than(10)
+any_of(10,3).should_be_less_than(10)
+all_of(3,3).should_be_less_than(10)
+none_of(11,13).should_be_less_than(10)
+
+# Support quantifiers when using | notation
+any_of([10, 3]) | should.be_less_than(5)
+all_of(10, 3) | should.be_greater_than(1)
+
 
 [3,1] | should_all.be_less_than(10)
+[3,1] | should_any.be_less_than(2)
+[3,1] | should_none.be_less_than(1)
+
+
+#1 | should.check(lambda v: v < 2)
+#any_of([1,3]).should_check(lambda v: v < 2)
+#all_of(1, 3).should_check('v < 2')
+#all_of(1, 3) | should.check(lambda v: v < 2)
+
 
 1 | should_not.be_equal_to(2)
 

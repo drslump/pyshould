@@ -1,20 +1,20 @@
 import pyshould
 
-def expect(*args):
-    if len(args) > 1:
-        return expect_all(args)
+def expect(value, *args):
+    if len(args):
+        return expect_all(value, *args)
     else:
-        return expect_it(args[0])
+        return expect_it(value)
 
 def expect_it(value):
     return pyshould.it(value)
 
-def expect_all(value):
-    return pyshould.all_of(value)
+def expect_all(*args):
+    return pyshould.all_of(*args)
 
-def expect_any(value):
-    return pyshould.any_of(value)
+def expect_any(*args):
+    return pyshould.any_of(*args)
 
-def expect_none(value):
-    return pyshould.none_of(value)
+def expect_none(*args):
+    return pyshould.none_of(*args)
 
