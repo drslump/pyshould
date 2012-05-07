@@ -21,7 +21,7 @@ it(foo).throws(regex='[Ff]oo')
 
 (lambda:foo()) | should.throw(TypeError)
 
-#change_bar | should.not_change(bar)
+change_bar | should.not_change(bar)
 #change_bar | should.not_change(lambda:bar)
 
 
@@ -35,7 +35,7 @@ assert False | should.be_int.And_equal(0)
 (1,) | should.be_a_tuple()
 1 | should.be_an_int()
 
-1 | should.be_truthy.and_not_eq(2)
+False | should.be_truthy.and_not_eq(2)
 
 it(1).truthy.integer.eq(1)
 
@@ -71,6 +71,7 @@ none_of(11,13).should_be_less_than(10)
 # Support quantifiers when using | notation
 any_of([10, 3]) | should.be_less_than(5)
 all_of(10, 3) | should.be_greater_than(1)
+#none_of(10, 3) | 
 
 
 [3,1] | should_all.be_less_than(10)

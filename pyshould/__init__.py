@@ -1,10 +1,9 @@
 """
 pyshould - a should style wrapper for pyhamcrest
 """
-
 from pyshould.dsl import *
 
-# Override the list of available names to just the minimum DSL
+# Override the list public symbols for a wildcard import
 __all__ = [
     'should',
     'should_not',
