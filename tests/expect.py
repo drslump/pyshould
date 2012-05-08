@@ -1,4 +1,5 @@
 import unittest
+from pyshould import *
 from pyshould.expect import expect, expect_all, expect_any, expect_none
 
 class ExpectTestCase(unittest.TestCase):
@@ -19,4 +20,8 @@ class ExpectTestCase(unittest.TestCase):
     def test_expect_none(self):
         expect_none([1,2]).to_equal(0)
         expect_none(1,2).to_equal(0)
+
+    def test_expect_quantifiers(self):
+        expect(all_of(1, '2')).to_be_integer()
+        expect(any_of([1, 2])).to_eq(1)
 

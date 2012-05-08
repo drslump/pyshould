@@ -115,6 +115,7 @@ coordinated expressions (use of and, or, but).
     from pyshould.expect import expect, expect_all, expect_any, expect_none
 
     expect(1).to_equal(1)
+    # Note that matchers without params need the call parens when using this syntax
     expect_all(1, 3).to_be_int()
     expect_any([1, 3]).to_equal(1)
     expect(any_of(1,3)).to_equal(1)
