@@ -27,10 +27,11 @@ designed to be used with a _wildcard import_ although if you prefer you can just
 import those DSL keywords you need. Here are some examples on different ways to import
 the library in your code:
 
+```python
     from pyshould import *
     from pyshould import should
     from pyshould import should, should_not, all_of
-
+```
 
 ## Expectations
 
@@ -52,6 +53,7 @@ no need to use it as a method call.
 
 See the following examples of expectations:
 
+```python
     from pyshould import *
 
     result | should.be_integer()
@@ -62,7 +64,7 @@ See the following examples of expectations:
     1 | should_not.eq(2)
     # Matchers not requiring a param can skip the call parens
     True | should.be_truthy
-
+```
 
 ## Coordination
 
@@ -88,37 +90,38 @@ into simpler ones.
 Please review the following examples to see how these precedence rules
 apply.
 
+```python
     should.be_an_integer.or_string.and_equal(1)
-    (integer) OR (string AND equal 1)
+    # (integer) OR (string AND equal 1)
 
     should.be_an_integer.or_a_float.or_a_string
-    (integer) OR (float) OR (string)
+    # (integer) OR (float) OR (string)
     should.be_an_integer.or_a_string.and_equal_to(10).or_a_float
-    (integer) OR (string AND equal 10) OR (float)
+    # (integer) OR (string AND equal 10) OR (float)
 
     should.be_an_integer.or_a_string.but_less_than(10)
-    (integer OR string) AND (less than 10)
+    # (integer OR string) AND (less than 10)
 
-    -- Note: we can use spacing to make them easier to read
+    # Note: we can use spacing to make them easier to read
     should.be_an_integer  .or_a_string.and_equal(0)  .or_a_float
-    (integer) OR (string AND equal 0) OR (float)
+    # (integer) OR (string AND equal 0) OR (float)
 
-    -- Note: in this case we use capitalization to make them more obvious
+    # Note: in this case we use capitalization to make them more obvious
     should.be_an_integer .Or_a_string.And_equal(1) .But_Not_be_a_float
-    ( (integer) OR (string AND equal 1) ) AND (not float)
+    # ( (integer) OR (string AND equal 1) ) AND (not float)
 
-    -- Note: if no matchers are given the last one is used
+    # Note: if no matchers are given the last one is used
     should.be_equal_to(10).Or(20).Or(30)
-    (equal 10) OR (equal 20) OR (equal 30)
+    # (equal 10) OR (equal 20) OR (equal 30)
 
-    -- Note: If no combinator is given AND is used by default
+    # Note: If no combinator is given AND is used by default
     should.integer.greater_than(10).less_than(20)
-    (integer) AND (greater than 10) AND (less than 20)
+    # (integer) AND (greater than 10) AND (less than 20)
 
-    -- Note: But by using should_either we can set OR as default
+    # Note: But by using should_either we can set OR as default
     should_either.equal(10).equal(20).equal(30)
-    (equal 10) OR (equal 20) OR (equal 30)
-
+    # (equal 10) OR (equal 20) OR (equal 30)
+```
 
 ## Quantifiers
 
@@ -126,18 +129,22 @@ Using the standard syntax it's possible to define a matcher in conjunction
 with a quantifier. These are specially useful when working with iterable
 values.
 
+```python
     [1, 2] | should_all.be_int
     (1, 2) | should_any.equal(1)
     iterable | should_none.be_empty
+```
 
 We can also define directly a matcher without using the pipe syntax by
 wrapping the value to test in a quantifier keyword.
 
+```python
     it(1).should_equal(1)
     it(0).to_equal(0)
     any_of(1, 3).to_equal(1)
     all_of([1, 3]).should_be_int()
     none_of(1, 3).to_eq(0)
+```
 
 
 ## Alternative syntax
@@ -146,6 +153,7 @@ Besides the standard syntax shown above (aka _pipe syntax_) it's also possible
 to use other syntaxes by using the `expect` module, although it doesn't support
 coordinated expressions (use of and, or, but).
 
+```python
     from pyshould.expect import expect, expect_all, expect_any, expect_none
 
     expect(1).to_equal(1)
@@ -153,6 +161,7 @@ coordinated expressions (use of and, or, but).
     expect_all(1, 3).to_be_int()
     expect_any([1, 3]).to_equal(1)
     expect(any_of(1,3)).to_equal(1)
+```
 
 
 ## License
