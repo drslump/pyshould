@@ -14,6 +14,24 @@ Its primary use case is in unit testing, replacing the need for Python's native
 used, since mismatches are reported using the standard `AssertionError`.
 
 
+## Installation and basic usage
+
+The installation procedure is based on _setuptools_ so it's pretty simple to get 
+going. In order to install from a checkout of the repository you can just issue the
+following command:
+
+    python setup.py install
+
+Now you'll be able to access **PyShould** by importing the package `pyshould`. It's
+designed to be used with a _wildcard import_ although if you prefer you can just 
+import those DSL keywords you need. Here are some examples on different ways to import
+the library in your code:
+
+    from pyshould import *
+    from pyshould import should
+    from pyshould import should, should_not, all_of
+
+
 ## Expectations
 
 Expectations are defined in by using a subject-predicate form that mimics
