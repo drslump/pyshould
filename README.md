@@ -1,9 +1,25 @@
-## EXPECTATIONS ##
+PyShould
+========
+
+**PyShould** is a Python DSL allowing to write expectations or assertions in 
+_almost_ natural language. The goal is to offer an expressive yet readable syntax
+to define the expectations in detail. 
+
+Under the hood it uses the [PyHamcrest](http://packages.python.org/PyHamcrest/) 
+library of matchers to build complex matching predicates and offer great
+explanations when there is a mismatch.
+
+Its primary use case is in unit testing, replacing the need for Python's native
+`assertX` methods. Its use is completely transparant to the unit testing runner
+used, since mismatches are reported using the standard `AssertionError`.
+
+
+## Expectations
 
 Expectations are defined in by using a subject-predicate form that mimics
 english natural language. Basically they take the form:
 
-"`subject` `|` _should_.`predicate`"
+`subject` `|` **should**.`predicate`
 
 Where `subject` is a python expression and `predicate` defines matchers and 
 expected values.
@@ -30,7 +46,7 @@ See the following examples of expectations:
     True | should.be_truthy
 
 
-## COORDINATION ##
+## Coordination
 
 Complex expectations can be _coordinated_ by using operators `and`, `or` and
 `but`. Also `not` is supported to negate the result of an expectation. It's
@@ -86,7 +102,7 @@ apply.
     (equal 10) OR (equal 20) OR (equal 30)
 
 
-## Quantifiers ##
+## Quantifiers
 
 Using the standard syntax it's possible to define a matcher in conjunction
 with a quantifier. These are specially useful when working with iterable
@@ -106,7 +122,7 @@ wrapping the value to test in a quantifier keyword.
     none_of(1, 3).to_eq(0)
 
 
-## Alternative syntax ##
+## Alternative syntax
 
 Besides the standard syntax shown above (aka _pipe syntax_) it's also possible
 to use other syntaxes by using the `expect` module, although it doesn't support
@@ -120,3 +136,31 @@ coordinated expressions (use of and, or, but).
     expect_any([1, 3]).to_equal(1)
     expect(any_of(1,3)).to_equal(1)
 
+
+## License
+
+    The MIT License
+
+    Copyright (c) 2012 Iván -DrSlump- Montes
+
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    'Software'), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+*[DSL]: Domain Specific Language
