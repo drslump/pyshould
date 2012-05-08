@@ -1,26 +1,32 @@
 ## EXPECTATIONS ##
 
 Expectations are defined in by using a subject-predicate form that mimics
-english natural language. Basically they take the form "`subject` `|` _should_.`predicate`"
-where `subject` is a python expression and `predicate` defines matchers and expected
-values.
+english natural language. Basically they take the form:
 
-Any python expressions can be used before _should_, although lambdas and other
+"`subject` `|` _should_.`predicate`"
+
+Where `subject` is a python expression and `predicate` defines matchers and 
+expected values.
+
+Any python expression can be used before _should_, although lambdas and other
 complex expressions should be enclosed in parens to ensure a proper interpretation.
 
 Matchers in the `predicate` part can have an expected value, this value should be
-given between parens, as with a normal method call. It will be used as an argument to
-the matcher function. If the matcher doesn't require an expected value there is no
-need to use it as a method call.
+given between parens, as with a normal method call. It will be used as an argument 
+to the matcher function. If the matcher doesn't require an expected value there is 
+no need to use it as a method call.
 
 See the following examples of expectations:
 
-    result | should.be_integer
+    from pyshould import *
+
+    result | should.be_integer()
     (1+1) | should_not.equal(1)
     "foo" | should.be('foo')
     len([1,2,3]) | should.be_greater_than(2);
     result | should.equal(1/2 + 5)
     1 | should_not.eq(2)
+    # Matchers not requiring a param can skip the call parens
     True | should.be_truthy
 
 
@@ -79,4 +85,37 @@ apply.
     should_either.equal(10).equal(20).equal(30)
     (equal 10) OR (equal 20) OR (equal 30)
 
+
+## Quantifiers ##
+
+Using the standard syntax it's possible to define a matcher in conjunction
+with a quantifier. These are specially useful when working with iterable
+values.
+
+    [1, 2] | should_all.be_int
+    (1, 2) | should_any.equal(1)
+    iterable | should_none.be_empty
+
+We can also define directly a matcher without using the pipe syntax by
+wrapping the value to test in a quantifier keyword.
+
+    it(1).should_equal(1)
+    it(0).to_equal(0)
+    any_of(1, 3).to_equal(1)
+    all_of([1, 3]).should_be_int()
+    none_of(1, 3).to_eq(0)
+
+
+## Alternative syntax ##
+
+Besides the standard syntax shown above (aka _pipe syntax_) it's also possible
+to use other syntaxes by using the `expect` module, although it doesn't support
+coordinated expressions (use of and, or, but).
+
+    from pyshould.expect import expect, expect_all, expect_any, expect_none
+
+    expect(1).to_equal(1)
+    expect_all(1, 3).to_be_int()
+    expect_any([1, 3]).to_equal(1)
+    expect(any_of(1,3)).to_equal(1)
 
