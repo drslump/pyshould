@@ -10,3 +10,4 @@ def all_tests():
     suite.addTest(unittest.makeSuite(CoordinationTestCase))
     suite.addTest(unittest.makeSuite(ExpectTestCase))
     return suite
+

@@ -10,7 +10,7 @@ library of matchers to build complex matching predicates and offer great
 explanations when there is a mismatch.
 
 Its primary use case is in unit testing, replacing the need for Python's native
-`assertX` methods. Its use is completely transparant to the unit testing runner
+`assertX` methods. Its use is completely transparent to the unit testing runner
 used, since mismatches are reported using the standard `AssertionError`.
 
 
@@ -162,5 +162,3 @@ coordinated expressions (use of and, or, but).
     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-*[DSL]: Domain Specific Language

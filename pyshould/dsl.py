@@ -8,6 +8,11 @@ from .expectation import (
         ExpectationNone, OPERATOR_OR
 )
 
+__author__  = "Ivan -DrSlump- Montes"
+__email__   = "drslump@pollinimini.net"
+__license__ = "MIT"
+
+
 # Create instances to be used with the overloaded | operator
 should = Expectation(deferred=True)
 should_not = ExpectationNot(deferred=True)

@@ -1,11 +1,15 @@
 """
 Defines the expectation class which is the basis for performing the assertions.
 """
-
 import re
 import hamcrest as hc
+
 from .patched import IsNot
 from .matchers import lookup, suggest
+
+__author__  = "Ivan -DrSlump- Montes"
+__email__   = "drslump@pollinimini.net"
+__license__ = "MIT"
 
 
 # Define the set of coordination operators assigning to them a weight to

@@ -1,5 +1,10 @@
 import pyshould
 
+__author__  = "Ivan -DrSlump- Montes"
+__email__   = "drslump@pollinimini.net"
+__license__ = "MIT"
+
+
 def expect(value, *args):
     if len(args):
         return expect_all(value, *args)

@@ -22,6 +22,6 @@ class ExpectTestCase(unittest.TestCase):
         expect_none(1,2).to_equal(0)
 
     def test_expect_quantifiers(self):
-        expect(all_of(1, '2')).to_be_integer()
+        expect(all_of(1, 2)).to_be_integer()
         expect(any_of([1, 2])).to_eq(1)
 

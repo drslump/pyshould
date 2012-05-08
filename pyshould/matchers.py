@@ -3,8 +3,13 @@ Defines the registry of matchers and the standard set of matchers
 """
 
 import re
-from difflib import get_close_matches
 import hamcrest as hc
+from difflib import get_close_matches
+
+__author__  = "Ivan -DrSlump- Montes"
+__email__   = "drslump@pollinimini.net"
+__license__ = "MIT"
+
 
 # Words to ignore when looking up matchers
 IGNORED_WORDS = ['should', 'to', 'be', 'a', 'an', 'is', 'the', 'as']
