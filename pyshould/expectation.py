@@ -197,18 +197,14 @@ class Expectation(object):
         elif parts[0] == 'but':
             self.expr.append(OPERATOR_BUT)
             parts.pop(0)
-        elif parts[0] == 'not':
-            self.expr.append(OPERATOR_NOT)
-            parts.pop(0)
         # If no coordinator is given assume a default one
         elif len(self.expr):
             self.expr.append(self.def_op)
 
         # Negation can come just after a combinator (ie: .and_not_be_equal)
-        if len(parts) and parts[0] == 'not':
+        if 'not' in parts:
             self.expr.append(OPERATOR_NOT)
-            parts.pop(0)
-
+            parts.pop(parts.index('not'))
 
         if len(parts):
             name = '_'.join(parts)
