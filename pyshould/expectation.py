@@ -12,12 +12,15 @@ __email__   = "drslump@pollinimini.net"
 __license__ = "MIT"
 
 
-# Define the set of coordination operators assigning to them a weight to
-# indicate their precedence. Higher values take precedence over lower ones.
-OPERATOR_NOT = 20
-OPERATOR_AND = 10
-OPERATOR_OR  = 5
-OPERATOR_BUT = 1
+class OPERATOR:
+    """ Define the set of coordination operators assigning to them a weight
+        to indicate their precedence. Higher values take precedence over 
+        lower ones.
+    """
+    NOT = 20
+    AND = 10
+    OR  = 5
+    BUT = 1
 
 
 class Expectation(object):
@@ -26,7 +29,7 @@ class Expectation(object):
     """
 
     def __init__(self, value=None, deferred=False, description=None, 
-                 def_op = OPERATOR_AND, def_matcher = 'equal'):
+                 def_op=OPERATOR.AND, def_matcher='equal'):
         self.reset()
         self.value = value
         self.deferred = deferred
@@ -80,7 +83,7 @@ class Expectation(object):
         """
 
         # To support the syntax `any_of(subject) | should ...` we check if the
-        # value to check is an Expection object and if it is we use the descriptor
+        # value to check is an Expectation object and if it is we use the descriptor
         # protocol to bind the value's assertion logic to this expectation.
         if isinstance(value, Expectation):
             assertion = value._assertion.__get__(self, Expectation)
@@ -117,7 +120,7 @@ class Expectation(object):
         for token in rpn:
             if isinstance(token, (int, long)):
                 # Handle the NOT case in a special way since it's unary
-                if token == OPERATOR_NOT:
+                if token == OPERATOR.NOT:
                     stack[-1] = IsNot(stack[-1])
                     continue
 
@@ -126,7 +129,7 @@ class Expectation(object):
                     raise RuntimeError('Unable to build a valid expression. Not enough operands available.');
 
                 # Check what kind of matcher we need to create
-                if token == OPERATOR_OR:
+                if token == OPERATOR.OR:
                     matcher = hc.any_of(*stack[-2:])
                 else: # AND, BUT
                     matcher = hc.all_of(*stack[-2:])
@@ -193,13 +196,13 @@ class Expectation(object):
         parts = name.lower().split('_')
         # Check if we have a coordinator as first item
         if parts[0] == 'and':
-            self.expr.append(OPERATOR_AND)
+            self.expr.append(OPERATOR.AND)
             parts.pop(0)
         elif parts[0] == 'or':
-            self.expr.append(OPERATOR_OR)
+            self.expr.append(OPERATOR.OR)
             parts.pop(0)
         elif parts[0] == 'but':
-            self.expr.append(OPERATOR_BUT)
+            self.expr.append(OPERATOR.BUT)
             parts.pop(0)
         # If no coordinator is given assume a default one
         elif len(self.expr):
@@ -207,7 +210,7 @@ class Expectation(object):
 
         # Negation can come just after a combinator (ie: .and_not_be_equal)
         if 'not' in parts:
-            self.expr.append(OPERATOR_NOT)
+            self.expr.append(OPERATOR.NOT)
             parts.pop(parts.index('not'))
 
         if len(parts):

@@ -1,5 +1,5 @@
 import unittest
-from pyshould import Expectation, OPERATOR_OR
+from pyshould import Expectation, OPERATOR
 
 class CoordinationTestCase(unittest.TestCase):
     """ Test coordination of complex expectations """
@@ -27,7 +27,7 @@ class CoordinationTestCase(unittest.TestCase):
         self.assertRaises(AssertionError, lambda: ex.resolve(1))
 
     def test_implicit_or(self):
-        ex = Expectation(deferred=True, def_op = OPERATOR_OR)
+        ex = Expectation(deferred=True, def_op = OPERATOR.OR)
 
         ex.equal(1).equal(0)
         ex.resolve(0)
