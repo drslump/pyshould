@@ -83,6 +83,7 @@ def lookup(alias):
 
     return None
 
+
 def suggest(alias, max=3, cutoff=0.5):
     """ Suggest a list of aliases which are similar enough
     """

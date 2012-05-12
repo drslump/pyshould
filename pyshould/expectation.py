@@ -7,19 +7,19 @@ import hamcrest as hc
 from .patched import IsNot
 from .matchers import lookup, suggest
 
-__author__  = "Ivan -DrSlump- Montes"
-__email__   = "drslump@pollinimini.net"
+__author__ = "Ivan -DrSlump- Montes"
+__email__ = "drslump@pollinimini.net"
 __license__ = "MIT"
 
 
 class OPERATOR:
     """ Define the set of coordination operators assigning to them a weight
-        to indicate their precedence. Higher values take precedence over 
+        to indicate their precedence. Higher values take precedence over
         lower ones.
     """
     NOT = 20
     AND = 10
-    OR  = 5
+    OR = 5
     BUT = 1
 
 
@@ -28,7 +28,7 @@ class Expectation(object):
         finally resolving it.
     """
 
-    def __init__(self, value=None, deferred=False, description=None, 
+    def __init__(self, value=None, deferred=False, description=None,
                  def_op=OPERATOR.AND, def_matcher='equal'):
         self.reset()
         self.value = value
@@ -46,13 +46,13 @@ class Expectation(object):
 
     def __ror__(self, lvalue):
         """ Evaluate against the left hand side of the OR (pipe) operator. Since in
-            Python this operator has a fairly low precedence this method will usually 
+            Python this operator has a fairly low precedence this method will usually
             be called once the whole right hand side of the expression has been evaluated.
         """
         self.resolve(lvalue)
         return self
 
-    def resolve(self, value = None):
+    def resolve(self, value=None):
         """ Resolve the current expression against the supplied value """
 
         # If we still have an uninitialized matcher init it now
@@ -99,7 +99,7 @@ class Expectation(object):
         # Apply Shunting Yard algorithm to convert the infix expression
         # into Reverse Polish Notation. Since we have a very limited
         # set of operators and binding rules, the implementation becomes
-        # really simple. The expression is formed of hamcrest matcher instances 
+        # really simple. The expression is formed of hamcrest matcher instances
         # and operators identifiers (ints).
         ops = []
         rpn = []
@@ -126,12 +126,12 @@ class Expectation(object):
 
                 # Our operators always need two operands
                 if len(stack) < 2:
-                    raise RuntimeError('Unable to build a valid expression. Not enough operands available.');
+                    raise RuntimeError('Unable to build a valid expression. Not enough operands available.')
 
                 # Check what kind of matcher we need to create
                 if token == OPERATOR.OR:
                     matcher = hc.any_of(*stack[-2:])
-                else: # AND, BUT
+                else:  # AND, BUT
                     matcher = hc.all_of(*stack[-2:])
 
                 stack[-2:] = [matcher]
@@ -139,10 +139,9 @@ class Expectation(object):
                 stack.append(token)
 
         if len(stack) != 1:
-            raise RuntimeError('Unable to build a valid expression. The RPN stack should have just one item.');
+            raise RuntimeError('Unable to build a valid expression. The RPN stack should have just one item.')
 
         return stack.pop()
-
 
     def _find_matcher(self, alias):
         """ Finds a matcher based on the given alias or raises an error if no
@@ -174,12 +173,11 @@ class Expectation(object):
     def described_as(self, description, *args):
         """ Specify a custom message for the matcher """
         self.description = description.format(*args)
-        return self 
+        return self
 
     def desc(self, description, *args):
         """ Just an alias to described_as """
         return self.described_as(description, *args)
-
 
     def __getattr__(self, name):
         """ Overload property access to interpret them as matchers. """
@@ -240,12 +238,12 @@ class Expectation(object):
         return self
 
 
-
 class ExpectationNot(Expectation):
     """ Negates the result of the matcher """
 
     def _assertion(self, matcher, value):
         hc.assert_that(value, IsNot(matcher))
+
 
 class ExpectationAny(Expectation):
     """ Succeeds if any of the items in an iterable value passes the matcher """
@@ -253,16 +251,16 @@ class ExpectationAny(Expectation):
     def _assertion(self, matcher, value):
         hc.assert_that(value, hc.has_item(matcher))
 
+
 class ExpectationAll(Expectation):
     """ Succeeds if all of the items in an iterable value pass the matcher """
 
     def _assertion(self, matcher, value):
         hc.assert_that(value, hc.only_contains(matcher))
 
+
 class ExpectationNone(Expectation):
     """ Succeeds if none of the items in an iterable value passes the matcher """
 
     def _assertion(self, matcher, value):
         hc.assert_that(value, IsNot(hc.has_item(matcher)))
-
-

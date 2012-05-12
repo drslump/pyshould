@@ -8,10 +8,9 @@ from .expectation import (
         ExpectationNone, OPERATOR
 )
 
-__author__  = "Ivan -DrSlump- Montes"
-__email__   = "drslump@pollinimini.net"
+__author__ = "Ivan -DrSlump- Montes"
+__email__ = "drslump@pollinimini.net"
 __license__ = "MIT"
-
 
 # Create instances to be used with the overloaded | operator
 should = Expectation(deferred=True)
@@ -26,6 +25,7 @@ def it(value):
     """ Wraps a value in an exepctation """
     return Expectation(value)
 
+
 def any_of(value, *args):
     """ At least one of the items in value should match """
 
@@ -34,6 +34,7 @@ def any_of(value, *args):
 
     return ExpectationAny(value)
 
+
 def all_of(value, *args):
     """ All the items in value should match """
 
@@ -41,6 +42,7 @@ def all_of(value, *args):
         value = (value,) + args
 
     return ExpectationAll(value)
+
 
 def none_of(value, *args):
     """ None of the items in value should match """
