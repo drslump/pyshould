@@ -2,7 +2,7 @@
 Define the names making up the domain specific language
 """
 
-from .expectation import (
+from pyshould.expectation import (
         Expectation, ExpectationNot,
         ExpectationAll, ExpectationAny,
         ExpectationNone, OPERATOR
