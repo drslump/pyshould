@@ -5,9 +5,10 @@ Defines the registry of matchers and the standard set of matchers
 import re
 import hamcrest as hc
 from difflib import get_close_matches
+from hamcrest.core.base_matcher import BaseMatcher
 
-__author__  = "Ivan -DrSlump- Montes"
-__email__   = "drslump@pollinimini.net"
+__author__ = "Ivan -DrSlump- Montes"
+__email__ = "drslump@pollinimini.net"
 __license__ = "MIT"
 
 
@@ -18,6 +19,22 @@ IGNORED_WORDS = ['should', 'to', 'be', 'a', 'an', 'is', 'the', 'as']
 matchers = {}
 # Map of normalized matcher aliases as normalized:alias
 normalized = {}
+
+
+class ContextManagerResult(object):
+    """ When an expression is used in a `with` statement we capture the params
+        in the __exit__ method of the expression context managet with this class,
+        this allows to pass it to the matchers as the value to test, which is mostly
+        useful for the raise/throw one.
+    """
+    def __init__(self, type_, value, trace):
+        self.exc_type = type_
+        self.exc_value = value
+        self.trace = trace
+
+    def __str__(self):
+        """ Provide a suitable description of the exception for AnyOf/AllOf matchers """
+        return repr(self.exc_value)
 
 
 def register(matcher, *aliases):
@@ -32,6 +49,7 @@ def register(matcher, *aliases):
         # Map a version without snake case
         norm = norm.replace('_', '')
         normalized[norm] = alias
+
 
 def unregister(matcher):
     """ Unregister a matcher (or alias) from the registry
@@ -52,6 +70,7 @@ def unregister(matcher):
 
     return len(aliases) > 0
 
+
 def normalize(alias):
     """ Normalizes an alias by removing adverbs defined in IGNORED_WORDS
     """
@@ -61,6 +80,7 @@ def normalize(alias):
     words = alias.lower().split('_')
     words = filter(lambda w: w not in IGNORED_WORDS, words)
     return '_'.join(words)
+
 
 def lookup(alias):
     """ Tries to find a matcher callable associated to the given alias. If
@@ -97,65 +117,62 @@ def suggest(alias, max=3, cutoff=0.5):
 # Matchers should be defined with verbose aliases to allow the use of
 # natural english where possible. When looking up a matcher common adverbs
 # like 'to', 'be' or 'is' are ignored in the comparison.
-
 register(hc.equal_to,
-    'be_equal_to', 'be_equals_to', 'be_eql_to', 'be_eq_to')
+         'be_equal_to', 'be_equals_to', 'be_eql_to', 'be_eq_to')
 register(hc.instance_of,
-    'be_an_instance_of', 'be_a', 'be_an')
+         'be_an_instance_of', 'be_a', 'be_an')
 register(hc.same_instance,
-    'be_the_same_instance_as', 'be_the_same_as', 'be')
+         'be_the_same_instance_as', 'be_the_same_as', 'be')
 
 register(hc.has_entry,
-    'have_the_entry', 'contain_the_entry')
+         'have_the_entry', 'contain_the_entry')
 register(hc.has_entries,
-    'have_the_entries', 'contain_the_entries')
+         'have_the_entries', 'contain_the_entries')
 register(hc.has_key,
-    'have_the_key', 'contain_the_key')
+         'have_the_key', 'contain_the_key')
 register(hc.has_value,
-    'have_the_value', 'contain_the_value')
+         'have_the_value', 'contain_the_value')
 register(hc.is_in,
-    'be_in', 'be_into', 'be_contained_in')
+         'be_in', 'be_into', 'be_contained_in')
 register(hc.has_item,
-    'have_the_item', 'contain_the_item')
+         'have_the_item', 'contain_the_item')
 register(hc.has_items,
-    'have_the_items', 'contain_the_items')
+         'have_the_items', 'contain_the_items')
 register(hc.contains_inanyorder,
-    'have_in_any_order', 'contain_in_any_order')
+         'have_in_any_order', 'contain_in_any_order')
 register(hc.contains,
-    'have', 'contain')
+         'have', 'contain')
 register(hc.only_contains,
-    'have_only', 'contain_only')
+         'have_only', 'contain_only')
 register(hc.close_to,
-    'be_close_to')
+         'be_close_to')
 register(hc.greater_than,
-    'be_greater_than', 'be_gt')
+         'be_greater_than', 'be_gt')
 register(hc.greater_than_or_equal_to,
-    'be_greater_than_or_equal_to', 'be_ge')
+         'be_greater_than_or_equal_to', 'be_ge')
 register(hc.less_than,
-    'be_less_than', 'be_lt')
+         'be_less_than', 'be_lt')
 register(hc.less_than_or_equal_to,
-    'be_less_than_or_equal_to', 'be_le')
+         'be_less_than_or_equal_to', 'be_le')
 register(hc.has_length,
-    'have_length')
+         'have_length')
 register(hc.has_property,
-    'have_the_property', 'contain_the_property')
+         'have_the_property', 'contain_the_property')
 register(hc.has_string,
-    'have_the_string', 'contain_the_string')
+         'have_the_string', 'contain_the_string')
 register(hc.equal_to_ignoring_case,
-    'be_equal_to_ignoring_case')
+         'be_equal_to_ignoring_case')
 register(hc.equal_to_ignoring_whitespace,
-    'be_equal_to_ignoring_whitespace')
+         'be_equal_to_ignoring_whitespace')
 #register(hc.contains_string, 'have_the_string', 'contain_the_string')
 register(hc.ends_with,
-    'end_with')
+         'end_with')
 register(hc.starts_with,
-    'start_with', 'begin_with')
-register(hc.anything, 
-    'be_anything')
+         'start_with', 'begin_with')
+register(hc.anything,
+         'be_anything')
 
 
-
-from hamcrest.core.base_matcher import BaseMatcher
 
 class TypeMatcher(BaseMatcher):
     def _matches(self, item):
@@ -172,74 +189,92 @@ class TypeMatcher(BaseMatcher):
     def __call__(cls, *args, **kwargs):
         return cls()
 
+
 class IsInteger(TypeMatcher):
     types = (int, long)
     expected = 'an integer'
+
 
 class IsFloat(TypeMatcher):
     types = float
     expected = 'a float'
 
+
 class IsComplex(TypeMatcher):
     types = complex
     expected = 'a complex number'
+
 
 class IsNumeric(TypeMatcher):
     types = (int, long, float, complex)
     expected = 'a numeric type'
 
+
 class IsString(TypeMatcher):
     types = basestring
     expected = 'a string'
+
 
 class IsStr(TypeMatcher):
     types = str
     expected = 'a str'
 
+
 class IsUnicode(TypeMatcher):
     types = unicode
     expected = 'a unicode string'
+
 
 class IsByteArray(TypeMatcher):
     types = 'bytearray'
     expected = 'a bytearray'
 
+
 class IsBuffer(TypeMatcher):
     types = 'buffer'
     expected = 'a buffer'
+
 
 class IsXrange(TypeMatcher):
     types = 'xrange'
     expected = 'an xrange'
 
+
 class IsDict(TypeMatcher):
     types = dict
     expected = 'a dict'
+
 
 class IsList(TypeMatcher):
     types = list
     expected = 'a list'
 
+
 class IsTuple(TypeMatcher):
     types = tuple
     expected = 'a tuple'
+
 
 class IsSet(TypeMatcher):
     types = set
     expected = 'a set'
 
+
 class IsFrozenSet(TypeMatcher):
     types = frozenset
     expected = 'a frozenset'
+
 
 class IsFunction(TypeMatcher):
     import types
     types = types.FunctionType
     expected = 'a function'
 
+
 class IsBool(TypeMatcher):
     types = bool
     expected = 'a bool'
+
 
 class IsClass(BaseMatcher):
     def _matches(self, item):
@@ -295,6 +330,7 @@ class IsCallable(BaseMatcher):
 
 register(IsCallable, 'be_callable', 'be_a_callable_value', 'can_be_called')
 
+
 class IsNone(BaseMatcher):
     """ Check if a value is None """
     def _matches(self, item):
@@ -309,18 +345,20 @@ register(IsNone, 'be_none', 'be_a_none_value')
 class IsTrue(BaseMatcher):
     """ Check if a value is True """
     def _matches(self, item):
-        return item == True
+        return item is True
 
     def describe_to(self, desc):
         desc.append_text('a True')
 
+
 class IsFalse(BaseMatcher):
     """ Check if a value is False """
     def _matches(self, item):
-        return item == False
+        return item is False
 
     def describe_to(self, desc):
         desc.append_text('a False')
+
 
 class IsTruthy(BaseMatcher):
     """ Check if a value is truthy """
@@ -329,6 +367,7 @@ class IsTruthy(BaseMatcher):
 
     def describe_to(self, desc):
         desc.append_text('a truthy value')
+
 
 class IsFalsy(BaseMatcher):
     """ Check if a value is falsy """
@@ -354,17 +393,18 @@ class RaisesError(BaseMatcher):
         self.thrown = None
 
     def _matches(self, item):
-        # support passing arguments by feeding a tuple instead of a callable
-        if not callable(item) and getattr(item, '__getitem__', False):
-            func = item[0]
-            params = item[1:]
-        else:
-            func = item
-            params = []
-
         self.thrown = None
         try:
-            func(*params)
+            # support passing a context manager result
+            if isinstance(item, ContextManagerResult):
+                if item.exc_type is not None:
+                    raise item.exc_value
+            # support passing arguments by feeding a tuple instead of a callable
+            elif not callable(item) and getattr(item, '__getitem__', False):
+                item[0](*item[1:])
+            else:
+                item()
+
             return False
         except self.expected:
             return True
@@ -386,7 +426,7 @@ class RaisesError(BaseMatcher):
             desc.append_text('to raise an exception')
             if self.expected:
                 try:
-                    exps = map(lambda(x):x.__name__, self.expected)
+                    exps = map(lambda(x): x.__name__, self.expected)
                 except:
                     exps = [self.expected.__name__]
                 desc.append_text(' of type <%s>' % '>, <'.join(exps))
@@ -400,19 +440,21 @@ class RaisesError(BaseMatcher):
         else:
             desc.append_text('no exception was raised')
 
-register(RaisesError, 
-    'raise_an_error', 'raise_an_exception', 
-    'raises_an_error', 'raises_an_exception', 'raises', 'raise',
-    'throw_an_error', 'throw_an_exception', 
-    'throws_an_error', 'throws_an_exception', 'throws', 'throw')
+register(RaisesError,
+         'raise_an_error', 'raise_an_exception',
+         'raises_an_error', 'raises_an_exception', 'raises', 'raise',
+         'throw_an_error', 'throw_an_exception',
+         'throws_an_error', 'throws_an_exception', 'throws', 'throw')
 
 
 from copy import deepcopy
+
+
 class Changes(BaseMatcher):
     """ Checks if calling a value changes something """
 
-    def __init__(self, watcher):
-        self.watcher = watcher
+    def __init__(self, watch):
+        self.watch = watch
         self.before = None
         self.after = None
         self.changed = False
@@ -448,7 +490,7 @@ class Changes(BaseMatcher):
             self.changed = True
 
         return self.changed
-        
+
     def describe_to(self, desc):
         desc.append_text('change something')
 
@@ -465,5 +507,4 @@ class Changes(BaseMatcher):
                 .append_value(self.before)
 
 register(Changes,
-    'change', 'changes', 'modify', 'modifies')
-
+         'change', 'changes', 'modify', 'modifies')
