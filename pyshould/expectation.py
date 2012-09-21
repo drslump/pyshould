@@ -5,7 +5,7 @@ import re
 import hamcrest as hc
 
 from .patched import IsNot
-from .matchers import lookup, suggest
+from .matchers import lookup, suggest, ContextManagerResult
 
 __author__ = "Ivan -DrSlump- Montes"
 __email__ = "drslump@pollinimini.net"
@@ -28,6 +28,8 @@ class Expectation(object):
         finally resolving it.
     """
 
+    _contexts = []
+
     def __init__(self, value=None, deferred=False, description=None,
                  def_op=OPERATOR.AND, def_matcher='equal'):
         self.reset()
@@ -43,6 +45,13 @@ class Expectation(object):
         self.matcher = None
         self.last_matcher = None
         self.description = None
+
+    def clone(self):
+        """ Clone this expression """
+        from copy import copy
+        clone = copy(self)
+        clone.expr = copy(self.expr)
+        return clone
 
     def __ror__(self, lvalue):
         """ Evaluate against the left hand side of the OR (pipe) operator. Since in
@@ -182,6 +191,10 @@ class Expectation(object):
     def __getattr__(self, name):
         """ Overload property access to interpret them as matchers. """
 
+        # Ignore private (protocol) methods
+        if name[0:2] == '__':
+            raise AttributeError
+
         # If we still have an uninitialized matcher init it now
         if self.matcher:
             self._init_matcher()
@@ -236,6 +249,22 @@ class Expectation(object):
             self.resolve(self.value)
 
         return self
+
+    def __enter__(self):
+        clone = self.clone()
+        self._contexts.append(clone)
+        self.reset()
+        return self
+
+    def __exit__(self, exc, value, trace):
+        # If an assertion failed inside the block just raise that one
+        if isinstance(value, AssertionError):
+            return False
+
+        expr = self._contexts.pop()
+        result = ContextManagerResult(exc, value, trace)
+        expr.resolve(result)
+        return True
 
 
 class ExpectationNot(Expectation):
