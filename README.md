@@ -64,6 +64,13 @@ result | should.equal(1/2 + 5)
 1 | should_not.eq(2)
 # Matchers not requiring a param can skip the call parens
 True | should.be_truthy
+
+# Check for exceptions with the context manager interface
+with should.throw(TypeError):
+    raise TypeError('foo')
+
+with should.not_raise:  # will report a failure
+    fp = open('does-not-exists.txt')
 ```
 
 ## Coordination

@@ -150,7 +150,7 @@ register(hc.ends_with,
     'end_with')
 register(hc.starts_with,
     'start_with', 'begin_with')
-register(hc.anything, 
+register(hc.anything,
     'be_anything')
 
 
@@ -400,10 +400,10 @@ class RaisesError(BaseMatcher):
         else:
             desc.append_text('no exception was raised')
 
-register(RaisesError, 
-    'raise_an_error', 'raise_an_exception', 
+register(RaisesError,
+    'raise_an_error', 'raise_an_exception',
     'raises_an_error', 'raises_an_exception', 'raises', 'raise',
-    'throw_an_error', 'throw_an_exception', 
+    'throw_an_error', 'throw_an_exception',
     'throws_an_error', 'throws_an_exception', 'throws', 'throw')
 
 
@@ -448,7 +448,7 @@ class Changes(BaseMatcher):
             self.changed = True
 
         return self.changed
-        
+
     def describe_to(self, desc):
         desc.append_text('change something')
 
