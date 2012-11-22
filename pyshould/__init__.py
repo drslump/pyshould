@@ -20,3 +20,25 @@ __all__ = [
     'any_of',
     'none_of',
 ]
+
+
+# Patch mockito param matcher to use pyshould expectations
+try:
+    import mockito
+    from pyshould.expectation import Expectation
+
+    original_method = mockito.invocation.MatchingInvocation.compare
+
+    @staticmethod
+    def pyshould_compare(p1, p2):
+        if isinstance(p1, Expectation):
+            try:
+                expectation = p1.clone()
+                expectation.resolve(p2)
+                return True
+            except AssertionError:
+                return False
+        return original_method(p1, p2)
+
+except ImportError:
+    pass
