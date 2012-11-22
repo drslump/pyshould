@@ -155,7 +155,7 @@ register(hc.less_than,
 register(hc.less_than_or_equal_to,
          'be_less_than_or_equal_to', 'be_le')
 register(hc.has_length,
-         'have_length')
+         'have_length', 'have_len')
 register(hc.has_property,
          'have_the_property', 'contain_the_property')
 register(hc.has_string,
@@ -380,6 +380,18 @@ register(IsTrue, 'be_true')
 register(IsFalse, 'be_false')
 register(IsTruthy, 'be_a_truthy_value', 'be_truthy')
 register(IsFalsy, 'be_a_falsy_value', 'be_falsy')
+
+
+class IsEmpty(BaseMatcher):
+    """ Check if a value is empty """
+    def _matches(self, item):
+        return True if not len(item) else False
+
+    def describe_to(self, desc):
+        desc.append_text('an empty value')
+
+register(IsEmpty, 'be_empty')
+
 
 
 class RaisesError(BaseMatcher):
