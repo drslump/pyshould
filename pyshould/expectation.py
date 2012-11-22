@@ -266,6 +266,13 @@ class Expectation(object):
         expr.resolve(result)
         return True
 
+    def __repr__(self):
+        exp = self.clone()
+        if exp.matcher:
+            exp._init_matcher()
+        matcher = exp._evaluate()
+        return str(matcher)
+
 
 class ExpectationNot(Expectation):
     """ Negates the result of the matcher """
