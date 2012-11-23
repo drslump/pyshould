@@ -409,7 +409,7 @@ class RaisesError(BaseMatcher):
             # support passing a context manager result
             if isinstance(item, ContextManagerResult):
                 if item.exc_type is not None:
-                    raise item.exc_value
+                    raise item.exc_type(item.exc_value)
             # support passing arguments by feeding a tuple instead of a callable
             elif not callable(item) and getattr(item, '__getitem__', False):
                 item[0](*item[1:])
