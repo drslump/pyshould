@@ -58,7 +58,7 @@ from pyshould import *
 
 result | should.be_integer()
 (1+1) | should_not.equal(1)
-"foo" | should.be('foo')
+"foo" | should.equal('foo')
 len([1,2,3]) | should.be_greater_than(2);
 result | should.equal(1/2 + 5)
 1 | should_not.eq(2)
