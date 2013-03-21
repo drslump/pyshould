@@ -100,3 +100,11 @@ class DslTestCase(unittest.TestCase):
 
         with should.not_throw:
             pass
+
+        class FooError(Exception):
+            def __init__(self, foo, msg=None):
+                if not foo:
+                    raise ValueError('foo is not defined')
+
+        with should.throw(FooError):
+            raise FooError(10)

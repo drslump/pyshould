@@ -393,7 +393,6 @@ class IsEmpty(BaseMatcher):
 register(IsEmpty, 'be_empty')
 
 
-
 class RaisesError(BaseMatcher):
     """ Checks if calling the value raises an error """
 
@@ -409,7 +408,7 @@ class RaisesError(BaseMatcher):
             # support passing a context manager result
             if isinstance(item, ContextManagerResult):
                 if item.exc_type is not None:
-                    raise item.exc_type(item.exc_value)
+                    raise item.exc_value
             # support passing arguments by feeding a tuple instead of a callable
             elif not callable(item) and getattr(item, '__getitem__', False):
                 item[0](*item[1:])
@@ -417,16 +416,43 @@ class RaisesError(BaseMatcher):
                 item()
 
             return False
-        except self.expected:
-            return True
-        except Exception as e:
-            self.thrown = e
-            if self.message:
-                return self.message == str(e)
-            elif self.regex:
-                return re.match(self.regex, str(e)) is not None
 
-            return self.expected is None
+        except:
+            # This should capture any kind of raised value
+            import sys
+            self.thrown = sys.exc_info()[1]
+
+            if self.expected and not isinstance(self.thrown, self.expected):
+                return False
+            if self.message:
+                return self.message == str(self.thrown)
+            elif self.regex:
+                return re.match(self.regex, str(self.thrown))
+
+            return True
+
+        # except:
+        #     import sys
+        #     ex = sys.exc_info()[0]
+        #     self.thrown = ex
+        #     if self.expected and isinstance(ex, self.expected):
+        #         if self.message:
+        #             return self.message == str(ex)
+        #         elif self.regex:
+        #             return re.match(self.regex, str(ex))
+        #         return True
+        #     return False
+
+        # except self.expected:
+        #     return True
+        # except Exception as e:
+        #     self.thrown = e
+        #     if self.message:
+        #         return self.message == str(e)
+        #     elif self.regex:
+        #         return re.match(self.regex, str(e)) is not None
+
+        #     return self.expected is None
 
     def describe_to(self, desc):
         if self.thrown and self.message:
