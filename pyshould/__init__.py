@@ -40,5 +40,7 @@ try:
                 return False
         return original_method(p1, p2)
 
+    mockito.invocation.MatchingInvocation.compare = pyshould_compare
+
 except ImportError:
     pass

@@ -164,13 +164,14 @@ register(hc.equal_to_ignoring_case,
          'be_equal_to_ignoring_case')
 register(hc.equal_to_ignoring_whitespace,
          'be_equal_to_ignoring_whitespace')
-#register(hc.contains_string, 'have_the_string', 'contain_the_string')
+register(hc.contains_string,
+         'substring', 'have_the_substring', 'contain_the_substring')
 register(hc.ends_with,
          'end_with')
 register(hc.starts_with,
          'start_with', 'begin_with')
 register(hc.anything,
-         'be_anything')
+         'be_anything', 'be_any')
 
 
 class TypeMatcher(BaseMatcher):
