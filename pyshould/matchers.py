@@ -432,29 +432,6 @@ class RaisesError(BaseMatcher):
 
             return True
 
-        # except:
-        #     import sys
-        #     ex = sys.exc_info()[0]
-        #     self.thrown = ex
-        #     if self.expected and isinstance(ex, self.expected):
-        #         if self.message:
-        #             return self.message == str(ex)
-        #         elif self.regex:
-        #             return re.match(self.regex, str(ex))
-        #         return True
-        #     return False
-
-        # except self.expected:
-        #     return True
-        # except Exception as e:
-        #     self.thrown = e
-        #     if self.message:
-        #         return self.message == str(e)
-        #     elif self.regex:
-        #         return re.match(self.regex, str(e)) is not None
-
-        #     return self.expected is None
-
     def describe_to(self, desc):
         if self.thrown and self.message:
             desc.append_text('to raise an exception with message "%s"' % self.message)
