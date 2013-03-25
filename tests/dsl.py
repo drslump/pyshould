@@ -1,10 +1,10 @@
-import unittest
+import unittest2
 from pyshould import *
 from pyshould import dsl
 from pyshould import Expectation
 
 
-class DslTestCase(unittest.TestCase):
+class DslTestCase(unittest2.TestCase):
     """ Simple tests for the exposed DSL symbols """
 
     def test_keywords(self):
@@ -108,3 +108,37 @@ class DslTestCase(unittest.TestCase):
 
         with should.throw(FooError):
             raise FooError(10)
+
+    def test_expect_throw_non_empty_constructor_exception(self):
+        with should.throw(NonEmptyConstructorException):
+            raise NonEmptyConstructorException([])
+
+    def test_expect_throw_str_exceptions(self):
+        with should.throw(KeyError):
+            raise KeyError()
+
+        with should.throw(KeyError):
+            object = {}
+            object['non-existing-key']
+
+
+class NonEmptyConstructorException(Exception):
+
+    parameter = []
+
+    @property
+    def text(self):
+        return self.parameter
+
+    def __init__(self, parameter, message=None):
+        if parameter is None:
+            raise TypeError("parameter could not be None")
+
+        self.parameter = parameter
+        self.message = message
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
+
+    def __unicode__(self):
+        return 'Missing fields: %s' % (self.parameter)            
