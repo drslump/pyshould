@@ -13,12 +13,12 @@ __email__ = "drslump@pollinimini.net"
 __license__ = "MIT"
 
 # Create instances to be used with the overloaded | operator
-should = Expectation(deferred=True)
-should_not = ExpectationNot(deferred=True)
-should_all = ExpectationAll(deferred=True)
-should_any = ExpectationAny(deferred=True)
-should_none = ExpectationNone(deferred=True)
-should_either = Expectation(deferred=True, def_op=OPERATOR.OR)
+should = Expectation(deferred=True, factory=True)
+should_not = ExpectationNot(deferred=True, factory=True)
+should_all = ExpectationAll(deferred=True, factory=True)
+should_any = ExpectationAny(deferred=True, factory=True)
+should_none = ExpectationNone(deferred=True, factory=True)
+should_either = Expectation(deferred=True, factory=True, def_op=OPERATOR.OR)
 
 
 def it(value):

@@ -8,47 +8,47 @@ class CoordinationTestCase(unittest.TestCase):
     def test_implicit_and(self):
         ex = Expectation(deferred=True)
 
-        ex = ex.less_than(1).less_than(2)
+        ex.less_than(1).less_than(2)
         ex.resolve(0)
 
-        ex = ex.less_than(1).less_than(2)
+        ex.less_than(1).less_than(2)
         self.assertRaises(AssertionError, lambda: ex.resolve(1))
-        ex = ex.less_than(2).less_than(1)
+        ex.less_than(2).less_than(1)
         self.assertRaises(AssertionError, lambda: ex.resolve(1))
 
     def test_explicit_and(self):
         ex = Expectation(deferred=True)
 
-        ex = ex.less_than(1).and_less_than(2)
+        ex.less_than(1).and_less_than(2)
         ex.resolve(0)
 
-        ex = ex.less_than(1).and_less_than(2)
+        ex.less_than(1).and_less_than(2)
         self.assertRaises(AssertionError, lambda: ex.resolve(1))
-        ex = ex.less_than(2).And_less_than(1)
+        ex.less_than(2).And_less_than(1)
         self.assertRaises(AssertionError, lambda: ex.resolve(1))
 
     def test_implicit_or(self):
         ex = Expectation(deferred=True, def_op=OPERATOR.OR)
 
-        ex = ex.equal(1).equal(0)
+        ex.equal(1).equal(0)
         ex.resolve(0)
 
-        ex = ex.equal(0).equal(1)
+        ex.equal(0).equal(1)
         ex.resolve(0)
 
-        ex = ex.equal(1).equal(2)
+        ex.equal(1).equal(2)
         self.assertRaises(AssertionError, lambda: ex.resolve(0))
 
     def test_explicit_or(self):
         ex = Expectation(deferred=True)
 
-        ex = ex.equal(1).or_equal(0)
+        ex.equal(1).or_equal(0)
         ex.resolve(0)
 
-        ex = ex.equal(0).Or_equal(1)
+        ex.equal(0).Or_equal(1)
         ex.resolve(0)
 
-        ex = ex.equal(1).OR_equal(2)
+        ex.equal(1).OR_equal(2)
         self.assertRaises(AssertionError, lambda: ex.resolve(0))
 
     def test_precedence(self):

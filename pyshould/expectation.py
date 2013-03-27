@@ -30,11 +30,12 @@ class Expectation(object):
 
     _contexts = []
 
-    def __init__(self, value=None, deferred=False, description=None,
+    def __init__(self, value=None, deferred=False, description=None, factory=False,
                  def_op=OPERATOR.AND, def_matcher='equal'):
         self.reset()
         self.value = value
         self.deferred = deferred
+        self.factory = factory
         self.description = description
         self.def_op = def_op
         self.def_matcher = def_matcher
@@ -51,6 +52,7 @@ class Expectation(object):
         from copy import copy
         clone = copy(self)
         clone.expr = copy(self.expr)
+        clone.factory = False
         return clone
 
     def __ror__(self, lvalue):
@@ -198,7 +200,7 @@ class Expectation(object):
         # In deferred mode we always create a new instance. This avoids
         # problems when defining multiple expectations using the `should`
         # keyword without resolving every expectation in order.
-        obj = self.clone() if self.deferred else self
+        obj = self.clone() if self.factory else self
 
         # If we still have an uninitialized matcher then init it now
         if obj.matcher:
