@@ -165,6 +165,7 @@ register(hc.equal_to_ignoring_case,
 register(hc.equal_to_ignoring_whitespace,
          'be_equal_to_ignoring_whitespace')
 register(hc.contains_string,
+         'substr', 'have_the_substr', 'contain_the_substr',
          'substring', 'have_the_substring', 'contain_the_substring')
 register(hc.ends_with,
          'end_with')
