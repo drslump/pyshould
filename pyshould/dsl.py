@@ -3,9 +3,9 @@ Define the names making up the domain specific language
 """
 
 from pyshould.expectation import (
-        Expectation, ExpectationNot,
-        ExpectationAll, ExpectationAny,
-        ExpectationNone, OPERATOR
+    Expectation, ExpectationNot,
+    ExpectationAll, ExpectationAny,
+    ExpectationNone, OPERATOR
 )
 
 __author__ = "Ivan -DrSlump- Montes"
@@ -22,7 +22,7 @@ should_either = Expectation(deferred=True, def_op=OPERATOR.OR)
 
 
 def it(value):
-    """ Wraps a value in an exepctation """
+    """ Wraps a value in an expectation """
     return Expectation(value)
 
 

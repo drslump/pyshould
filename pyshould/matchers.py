@@ -529,3 +529,19 @@ class Changes(BaseMatcher):
 
 register(Changes,
          'change', 'changes', 'modify', 'modifies')
+
+
+class Callback(BaseMatcher):
+    """ Checks against an user supplied callback """
+
+    def __init__(self, callback):
+        self.callback = callback
+
+    def _matches(self, item):
+        return self.callback(item)
+
+    def describe_to(self, desc):
+        desc.append_text('passes callback')
+
+register(Callback,
+         'callback', 'pass', 'pass_callback')

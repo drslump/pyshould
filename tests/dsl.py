@@ -121,6 +121,9 @@ class DslTestCase(unittest2.TestCase):
             object = {}
             object['non-existing-key']
 
+    def test_callback_matcher(self):
+        1 | should.pass_callback(lambda x: x == 1)
+
 
 class NonEmptyConstructorException(Exception):
 
