@@ -539,10 +539,26 @@ class Callback(BaseMatcher):
         self.callback = callback
 
     def _matches(self, item):
-        return self.callback(item)
+        self.error = None
+        try:
+            return bool(self.callback(item))
+        except Exception as ex:
+            self.error = str(ex)
+            return False
 
     def describe_to(self, desc):
-        desc.append_text('passes callback')
+        desc.append_text('passses callback ')
+        if isinstance(self.callback, type(lambda: None)) and self.callback.__name__ == '<lambda>':
+            desc.append_text(self.callback.__name__)
+        else:
+            desc.append_text('{0}'.format(self.callback))
+
+    def describe_mismatch(self, item, desc):
+        if self.error:
+            desc.append_text('gave an exception "%s"' % self.error)
+        else:
+            desc.append_text('returned False')
+
 
 register(Callback,
          'callback', 'pass', 'pass_callback')

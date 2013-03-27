@@ -71,6 +71,9 @@ with should.throw(TypeError):
 
 with should.not_raise:  # will report a failure
     fp = open('does-not-exists.txt')
+
+# Apply our custom logic for a test
+'FooBarBaz' | should.pass_callback(lambda x: x[3:6] == 'Bar')
 ```
 
 ## Coordination
