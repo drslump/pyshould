@@ -124,6 +124,17 @@ class DslTestCase(unittest2.TestCase):
     def test_callback_matcher(self):
         1 | should.pass_callback(lambda x: x == 1)
 
+    def test_configuring_matchers(self):
+        m1 = should.eq(1)
+        m2 = should.eq(2)
+        m1.resolve(1)
+        m2.resolve(2)
+
+        m1 = should.be_true
+        m2 = should.be_false
+        m1.resolve(True)
+        m2.resolve(False)
+
 
 class NonEmptyConstructorException(Exception):
 

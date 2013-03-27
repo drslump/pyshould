@@ -174,7 +174,7 @@ expect(any_of(1,3)).to_equal(1)
 ## Miscellanea
 
 If you happen to use [Mockito](https://code.google.com/p/mockito-python/) you can
-patch it to allow the use *pyshould* assertions/matchers with it.
+patch it to allow the use of *pyshould* assertions/matchers with it.
 
     from pyshould import should, patch_mockito
 

@@ -195,44 +195,49 @@ class Expectation(object):
         if name[0:2] == '__':
             raise AttributeError
 
-        # If we still have an uninitialized matcher init it now
-        if self.matcher:
-            self._init_matcher()
+        # In deferred mode we always create a new instance. This avoids
+        # problems when defining multiple expectations using the `should`
+        # keyword without resolving every expectation in order.
+        obj = self.clone() if self.deferred else self
+
+        # If we still have an uninitialized matcher then init it now
+        if obj.matcher:
+            obj._init_matcher()
             # In deferred mode we will resolve in the __ror__ overload
-            if not self.deferred:
-                self.resolve(self.value)
+            if not obj.deferred:
+                obj.resolve(obj.value)
 
         # Normalize the name to split by underscore
         name = re.sub(r'([a-z])([A-Z])', r'\1_\2', name)
         parts = name.lower().split('_')
         # Check if we have a coordinator as first item
         if parts[0] == 'and':
-            self.expr.append(OPERATOR.AND)
+            obj.expr.append(OPERATOR.AND)
             parts.pop(0)
         elif parts[0] == 'or':
-            self.expr.append(OPERATOR.OR)
+            obj.expr.append(OPERATOR.OR)
             parts.pop(0)
         elif parts[0] == 'but':
-            self.expr.append(OPERATOR.BUT)
+            obj.expr.append(OPERATOR.BUT)
             parts.pop(0)
         # If no coordinator is given assume a default one
-        elif len(self.expr):
-            self.expr.append(self.def_op)
+        elif len(obj.expr):
+            obj.expr.append(obj.def_op)
 
         # Negation can come just after a combinator (ie: .and_not_be_equal)
         if 'not' in parts:
-            self.expr.append(OPERATOR.NOT)
+            obj.expr.append(OPERATOR.NOT)
             parts.pop(parts.index('not'))
 
         if len(parts):
             name = '_'.join(parts)
         else:
-            name = self.last_matcher or self.def_matcher
+            name = obj.last_matcher or obj.def_matcher
 
-        self.matcher = self._find_matcher(name)
-        self.last_matcher = name
+        obj.matcher = obj._find_matcher(name)
+        obj.last_matcher = name
 
-        return self
+        return obj
 
     def __call__(self, *args, **kwargs):
         """ Execute the matcher just registered by __getattr__ passing any given
