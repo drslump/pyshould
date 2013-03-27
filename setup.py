@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='pyshould',
     description='Should style asserts based on pyhamcrest',
-    version='0.1.6',
+    version='0.2.0',
     url='https://github.com/drslump/pyshould',
     author='Ivan -DrSlump- Montes',
     author_email='drslump@pollinimini.net',
