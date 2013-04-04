@@ -71,15 +71,10 @@ class Expectation(object):
             self._init_matcher()
 
         # Evaluate the current set of matchers forming the expression
-        matcher = self._evaluate()
-
-        # If a description has been given include it in the matcher
-        if self.description:
-            matcher = hc.described_as(self.description, matcher)
+        matcher = self.evaluate()
 
         try:
             self._assertion(matcher, value)
-
         except AssertionError as ex:
             # By re-raising here the exception we reset the traceback
             raise ex
@@ -102,7 +97,7 @@ class Expectation(object):
         else:
             hc.assert_that(value, matcher)
 
-    def _evaluate(self):
+    def evaluate(self):
         """ Converts the current expression into a single matcher, applying
             coordination operators to operands according to their binding rules
         """
@@ -152,7 +147,13 @@ class Expectation(object):
         if len(stack) != 1:
             raise RuntimeError('Unable to build a valid expression. The RPN stack should have just one item.')
 
-        return stack.pop()
+        matcher = stack.pop()
+
+        # If a description has been given include it in the matcher
+        if self.description:
+            matcher = hc.described_as(self.description, matcher)
+
+        return matcher
 
     def _find_matcher(self, alias):
         """ Finds a matcher based on the given alias or raises an error if no
@@ -176,6 +177,13 @@ class Expectation(object):
 
     def _init_matcher(self, *args, **kwargs):
         """ Executes the current matcher appending it to the expression """
+
+        # If subject-less expectation are provided as arguments convert them
+        # to plain Hamcrest matchers in order to allow complex compositions
+        fn = lambda x: x.evaluate() if isinstance(x, Expectation) else x
+        args = [fn(x) for x in args]
+        kwargs = dict((k, fn(v)) for k, v in kwargs.items())
+
         matcher = self.matcher(*args, **kwargs)
         self.expr.append(matcher)
         self.matcher = None
@@ -277,7 +285,7 @@ class Expectation(object):
         exp = self.clone()
         if exp.matcher:
             exp._init_matcher()
-        matcher = exp._evaluate()
+        matcher = exp.evaluate()
         return str(matcher)
 
 

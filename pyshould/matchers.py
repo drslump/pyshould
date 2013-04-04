@@ -157,7 +157,7 @@ register(hc.less_than_or_equal_to,
 register(hc.has_length,
          'have_length', 'have_len')
 register(hc.has_property,
-         'have_the_property', 'contain_the_property')
+         'have_the_property', 'contain_the_property', 'have_the_prop', 'contain_the_prop')
 register(hc.has_string,
          'have_the_string', 'contain_the_string')
 register(hc.equal_to_ignoring_case,

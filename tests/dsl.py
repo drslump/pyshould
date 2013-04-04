@@ -127,6 +127,17 @@ class DslTestCase(unittest2.TestCase):
     def test_callback_matcher_nested_expectation(self):
         1 | should.pass_callback(lambda x: x | should.eq(1))
 
+    def test_matcher_composition(self):
+        d = {'foo': 'bar'}
+        d | should.have_value(should.eq('bar'))
+        d | should.have_entry('foo', should.eq('baz').or_eq('bar'))
+        d | should.have_key('foo').and_have_value(should.eq('bar'))
+
+        self.assertRaises(
+            AssertionError,
+            lambda: d | should.have_entry('foo', should.eq('baz'))
+        )
+
     def test_configuring_matchers(self):
         m1 = should.eq(1)
         m2 = should.eq(2)
