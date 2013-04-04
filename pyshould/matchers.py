@@ -541,7 +541,13 @@ class Callback(BaseMatcher):
     def _matches(self, item):
         self.error = None
         try:
-            return bool(self.callback(item))
+            result = self.callback(item)
+            # Returning an expectation assumes it's correct (no failure raised)
+            from .expectation import Expectation
+            return isinstance(result, Expectation) or bool(result)
+        except AssertionError:
+            # Just forward assertion failures
+            raise
         except Exception as ex:
             self.error = str(ex)
             return False

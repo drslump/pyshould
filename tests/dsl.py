@@ -124,6 +124,9 @@ class DslTestCase(unittest2.TestCase):
     def test_callback_matcher(self):
         1 | should.pass_callback(lambda x: x == 1)
 
+    def test_callback_matcher_nested_expectation(self):
+        1 | should.pass_callback(lambda x: x | should.eq(1))
+
     def test_configuring_matchers(self):
         m1 = should.eq(1)
         m2 = should.eq(2)
