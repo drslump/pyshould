@@ -149,6 +149,47 @@ class DslTestCase(unittest2.TestCase):
         m1.resolve(True)
         m2.resolve(False)
 
+    def test_equality(self):
+        m = should.be_int.and_eq(1)
+        self.assertEqual(1, m)
+
+        self.assertRaises(
+            AssertionError,
+            lambda: self.assertEqual(m, 2)
+        )
+
+    def test_inequality(self):
+        m = should.be_int.and_eq(2)
+        self.assertNotEqual(1, m)
+
+        self.assertRaises(
+            AssertionError,
+            lambda: self.assertNotEqual(m, 2)
+        )
+
+    def test_mock(self):
+        try:
+            from mock import Mock
+        except:
+            raise unittest2.SkipTest('Mock library not available, skipping test')
+
+        mock = Mock()
+        mock(10, 1)
+
+        mock | should.be_called
+        self.assertRaises(
+            AssertionError,
+            lambda: mock | should.not_be_called
+        )
+
+        # Check it supports matchers in params
+        mock.assert_called_with(should.any, should.less_than(3))
+        self.assertRaises(
+            AssertionError,
+            lambda: mock.assert_called_with(should.any, should.greater_than(3))
+        )
+
+
 
 class NonEmptyConstructorException(Exception):
 

@@ -387,10 +387,21 @@ register(IsFalsy, 'be_a_falsy_value', 'be_falsy')
 class IsEmpty(BaseMatcher):
     """ Check if a value is empty """
     def _matches(self, item):
-        return True if not len(item) else False
+        try:
+            return bool(len(item))
+        except:
+            return False
 
     def describe_to(self, desc):
         desc.append_text('an empty value')
+
+    def describe_mismatch(self, item, desc):
+        try:
+            l = len(item)
+            desc.append_text('has {0} elements'.format(l))
+        except:
+            desc.append_value(item)
+            desc.append_text(' does not have a length')
 
 register(IsEmpty, 'be_empty')
 
@@ -568,3 +579,23 @@ class Callback(BaseMatcher):
 
 register(Callback,
          'callback', 'pass', 'pass_callback')
+
+
+class MockCalled(BaseMatcher):
+    """ Support for checking if mocks where called from the Mock library
+    """
+    def _matches(self, item):
+        if not hasattr(item, 'called'):
+            raise Exception('Mock object does not have a <called> attribute')
+        return item.called
+
+    def describe_to(self, desc):
+        desc.append_text('called')
+
+    def describe_mismatch(self, item, desc):
+        if item.called:
+            desc.append_text('was called')
+        else:
+            desc.append_text('was not called')
+
+register(MockCalled, 'called', 'invoked')

@@ -110,7 +110,7 @@ class Expectation(object):
         ops = []
         rpn = []
         for token in self.expr:
-            if isinstance(token, (int, long)):
+            if isinstance(token, int):
                 while len(ops) and token <= ops[-1]:
                     rpn.append(ops.pop())
                 ops.append(token)
@@ -124,7 +124,7 @@ class Expectation(object):
         # Walk the RPN expression to create AllOf/AnyOf matchers
         stack = []
         for token in rpn:
-            if isinstance(token, (int, long)):
+            if isinstance(token, int):
                 # Handle the NOT case in a special way since it's unary
                 if token == OPERATOR.NOT:
                     stack[-1] = IsNot(stack[-1])
@@ -266,6 +266,8 @@ class Expectation(object):
         return self
 
     def __enter__(self):
+        """ Implements the context manager protocol. Specially useful for asserting exceptions
+        """
         clone = self.clone()
         self._contexts.append(clone)
         self.reset()
@@ -280,6 +282,24 @@ class Expectation(object):
         result = ContextManagerResult(exc, value, trace)
         expr.resolve(result)
         return True
+
+    def __eq__(self, other):
+        """ Overloads the equality operator to trigger a resolution of the matcher
+            against the other expression value. This allows to easily use expressions
+            in other libraries like Mock.
+        """
+        clone = self.clone()
+        try:
+            clone.resolve(other)
+            return True
+        except AssertionError:
+            return False
+
+    def __ne__(self, other):
+        """ Overload not equal since Python will default to identity instead of negating
+            the result from equality.
+        """
+        return not self.__eq__(other)
 
     def __repr__(self):
         exp = self.clone()
