@@ -173,8 +173,22 @@ expect_any([1, 3]).to_equal(1)
 expect(any_of(1,3)).to_equal(1)
 ```
 
+## Integration with third parties
 
-## Miscellanea
+Broadly speaking, *pyshould* expressions overload Python's equality operator, so
+it's possible to use them with almost any third party library. Here is an example
+of the integration with the standard unittest assertion library.
+
+    m = should.be_an_int.and_greater_than(3)
+    self.assertEqual(2, m)
+    # AssertionError: 2 != (an integer and a value greater than <3>)
+
+Michael Foord's [Mock](http://www.voidspace.org.uk/python/mock/), which is available
+under `unittest.mock` from Python 3.3, will also work out of the box:
+
+    mock(10, 1)
+    mock.assert_called_with(should.any, should.be_greater_than(3))
+    # AssertionError: Expected call: mock(ANYTHING, a value greater than <3>)
 
 If you happen to use [Mockito](https://code.google.com/p/mockito-python/) you can
 patch it to allow the use of *pyshould* assertions/matchers with it.
@@ -184,11 +198,49 @@ patch it to allow the use of *pyshould* assertions/matchers with it.
     verify(MyClass).my_method(should.be_truthy, should.eq(10))
 
 
+## Miscellanea
+
+I find it extremely convenient to include `should` as a keyword under my editor 
+highlighting. This simple change makes the tests much more obvious and easier to 
+read. Here is an example syntax for Sublime Text, just place it in a file under 
+your user package directory.
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
+      <key>comment</key>
+      <string>Customizations to the Python syntax</string>
+      <key>name</key>
+      <string>Python (Customized)</string>
+      <key>scopeName</key>
+      <string>source.custom.python</string>
+      <key>fileTypes</key>
+      <array>
+        <string>py</string>
+      </array>
+      <key>patterns</key>
+      <array>
+        <dict>
+          <key>match</key>
+          <string>\|\s*should(_(any|all|none|not|either))?\.</string>
+          <key>name</key>
+          <string>keyword.custom.python</string>
+        </dict>
+        <dict>
+          <key>include</key>
+          <string>source.python</string>
+        </dict>
+      </array>
+    </dict>
+    </plist>
+
+
 ## License
 
     The MIT License
 
-    Copyright (c) 2012 Iván -DrSlump- Montes
+    Copyright (c) 2012, 2013 Iván -DrSlump- Montes
 
     Permission is hereby granted, free of charge, to any person obtaining
     a copy of this software and associated documentation files (the
