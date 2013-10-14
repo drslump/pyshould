@@ -127,6 +127,14 @@ class DslTestCase(unittest2.TestCase):
     def test_callback_matcher_nested_expectation(self):
         1 | should.pass_callback(lambda x: x | should.eq(1))
 
+    def test_empty_matcher(self):
+        [] | should.be_empty
+        '' | should.be_empty
+        {} | should.be_empty
+        ['foo'] | should_not.be_empty
+        'foo' | should_not.be_empty
+        {'foo':'foo'} | should_not.be_empty
+
     def test_matcher_composition(self):
         d = {'foo': 'bar'}
         d | should.have_value(should.eq('bar'))

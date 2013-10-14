@@ -388,7 +388,7 @@ class IsEmpty(BaseMatcher):
     """ Check if a value is empty """
     def _matches(self, item):
         try:
-            return bool(len(item))
+            return not bool(len(item))
         except:
             return False
 
