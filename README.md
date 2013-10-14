@@ -1,6 +1,9 @@
 PyShould
 ========
 
+[![Version](https://pypip.in/v/pyshould/badge.png)](https://crate.io/packages/pyshould)
+[![Downloads](https://pypip.in/d/pyshould/badge.png)](https://crate.io/packages/pyshould)
+
 **PyShould** is a Python DSL allowing to write expectations or assertions in 
 _almost_ natural language. The goal is to offer an expressive yet readable syntax
 to define the expectations in detail. 
