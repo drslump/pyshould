@@ -192,7 +192,10 @@ class TypeMatcher(BaseMatcher):
 
 
 class IsInteger(TypeMatcher):
-    types = (int, long)
+    try:
+        types = (int, long)
+    except:
+        types = (int)  # Python 3
     expected = 'an integer'
 
 
@@ -207,12 +210,18 @@ class IsComplex(TypeMatcher):
 
 
 class IsNumeric(TypeMatcher):
-    types = (int, long, float, complex)
+    try:
+        types = (int, long, float, complex)
+    except:
+        types = (int, float, complex)  # Python 3
     expected = 'a numeric type'
 
 
 class IsString(TypeMatcher):
-    types = basestring
+    try:
+        types = basestring
+    except:
+        types = str  # Python 3
     expected = 'a string'
 
 
@@ -222,7 +231,10 @@ class IsStr(TypeMatcher):
 
 
 class IsUnicode(TypeMatcher):
-    types = unicode
+    try:
+        types = unicode
+    except:
+        types = str  # Python 3
     expected = 'a unicode string'
 
 
@@ -459,7 +471,7 @@ class RaisesError(BaseMatcher):
             desc.append_text('to raise an exception')
             if self.expected:
                 try:
-                    exps = map(lambda(x): x.__name__, self.expected)
+                    exps = map(lambda x: x.__name__, self.expected)
                 except:
                     exps = [self.expected.__name__]
                 desc.append_text(' of type <%s>' % '>, <'.join(exps))

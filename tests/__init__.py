@@ -1,8 +1,8 @@
 import unittest
 
-from dsl import DslTestCase
-from coordination import CoordinationTestCase
-from expect import ExpectTestCase
+from .dsl import DslTestCase
+from .coordination import CoordinationTestCase
+from .expect import ExpectTestCase
 
 def all_tests():
     suite = unittest.TestSuite()

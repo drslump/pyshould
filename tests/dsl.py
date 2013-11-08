@@ -1,10 +1,13 @@
-import unittest2
+try:
+    import unittest2 as unittest  # Python 2.6
+except:
+    import unittest
 from pyshould import *
 from pyshould import dsl
 from pyshould import Expectation
 
 
-class DslTestCase(unittest2.TestCase):
+class DslTestCase(unittest.TestCase):
     """ Simple tests for the exposed DSL symbols """
 
     def test_keywords(self):
@@ -177,9 +180,12 @@ class DslTestCase(unittest2.TestCase):
 
     def test_mock(self):
         try:
-            from mock import Mock
+            from unittest.mock import Mock  # Python 3.3
         except:
-            raise unittest2.SkipTest('Mock library not available, skipping test')
+            try:
+                from mock import Mock
+            except:
+                raise unittest.SkipTest('Mock library not available, skipping test')
 
         mock = Mock()
         mock(10, 1)
