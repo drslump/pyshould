@@ -10,6 +10,7 @@ python:
 # command to install dependencies
 install:
   - "pip install ."
+  - "pip install unittest2"  # Python 2.6 support
   - "pip install nose"
 
 # command to run tests
