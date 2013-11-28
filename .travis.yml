@@ -10,8 +10,8 @@ python:
 # command to install dependencies
 install:
   - "pip install ."
-  - "pip install unittest2"  # Python 2.6 support
   - "pip install nose"
+  - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2; fi"
 
 # command to run tests
 script: nosetests
