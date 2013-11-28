@@ -15,3 +15,7 @@ install:
 
 # command to run tests
 script: nosetests
+
+notifications:
+  email:
+    - drslump@pollinimini.net
