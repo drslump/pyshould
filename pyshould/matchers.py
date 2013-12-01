@@ -39,12 +39,11 @@ class ContextManagerResult(object):
         return repr(self.exc_value)
 
 
-def register(matcher, *aliases, docstr=None):
+def register(matcher, *aliases):
     """ Register a matcher associated to one or more aliases. Each alias
         given is also normalized.
     """
-    if docstr is None:
-        docstr = matcher.__doc__ if matcher.__doc__ is not None else ''
+    docstr = matcher.__doc__ if matcher.__doc__ is not None else ''
     helpmatchers[matcher] = docstr.strip()
 
     for alias in aliases:
