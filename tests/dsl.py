@@ -203,7 +203,14 @@ class DslTestCase(unittest.TestCase):
             lambda: mock.assert_called_with(should.any, should.greater_than(3))
         )
 
-
+    def test_patch_mockito(self):
+        import warnings
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            from pyshould import patch_mockito
+            w | should.have_len(1)
+            w[0].category | should.be(DeprecationWarning)
+            
 
 class NonEmptyConstructorException(Exception):
 
