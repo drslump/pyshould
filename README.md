@@ -10,8 +10,8 @@ _almost_ natural language. The goal is to offer an expressive yet readable synta
 to define the expectations in detail. 
 
 Under the hood it uses the [PyHamcrest](http://packages.python.org/PyHamcrest/) 
-library of matchers to build complex matching predicates and offer great
-explanations when there is a mismatch.
+library of matchers to **build complex matching predicates with ease** and offer 
+**great explanations** when there is a mismatch.
 
 Its primary use case is in unit testing, replacing the need for Python's native
 `assertX` methods. Its use is completely transparent to the unit testing runner
@@ -19,6 +19,10 @@ used, since mismatches are reported using the standard `AssertionError`.
 
 
 ## Installation and basic usage
+
+If you don't want to mess with the code the easier way to install is with `pip`:
+
+    pip install pyshould
 
 The installation procedure is based on _setuptools_ so it's pretty simple to get 
 going. In order to install from a checkout of the repository you can just issue the
@@ -37,6 +41,7 @@ from pyshould import should
 from pyshould import should, should_not, all_of
 ```
 
+
 ## Expectations
 
 Expectations are defined in by using a subject-predicate form that mimics
@@ -54,6 +59,9 @@ Matchers in the `predicate` part can have an expected value, this value should b
 given between parens, as with a normal method call. It will be used as an argument 
 to the matcher function. If the matcher doesn't require an expected value there is 
 no need to use it as a method call.
+
+> **TIP** Run the following snippet to print all the configured expectations with
+a description of what they do: `import pyshould; pyshould.print_help()`
 
 See the following examples of expectations:
 
@@ -79,6 +87,7 @@ with should.not_raise:  # will report a failure
 # Apply our custom logic for a test
 'FooBarBaz' | should.pass_callback(lambda x: x[3:6] == 'Bar')
 ```
+
 
 ## Coordination
 
@@ -137,6 +146,7 @@ should_either.equal(10).equal(20).equal(30)
 # (equal 10) OR (equal 20) OR (equal 30)
 ```
 
+
 ## Quantifiers
 
 Using the standard syntax it's possible to define a matcher in conjunction
@@ -177,6 +187,7 @@ expect_any([1, 3]).to_equal(1)
 expect(any_of(1,3)).to_equal(1)
 ```
 
+
 ## Integration with third parties
 
 Broadly speaking, *pyshould* expressions overload Python's equality operator, so
@@ -194,12 +205,29 @@ under `unittest.mock` from Python 3.3, will also work out of the box:
     mock.assert_called_with(should.any, should.be_greater_than(3))
     # AssertionError: Expected call: mock(ANYTHING, a value greater than <3>)
 
-If you happen to use [Mockito](https://code.google.com/p/mockito-python/) you can
-patch it to allow the use of *pyshould* assertions/matchers with it.
-
-    from pyshould import should, patch_mockito
+[Mockito](https://code.google.com/p/mockito-python/) has also been tested and works
+out of the box:
 
     verify(MyClass).my_method(should.be_truthy, should.eq(10))
+
+
+## Custom expectations
+
+Creating your custom expectations is fairly easy, have a look at the `matchers.py`
+file for a set of examples. Basically expectations are just a thin layer of 
+syntax sugar over Hamcrest's matchers, so the most difficult part is to implement
+the actual matcher.
+
+Alternatively, for those cases where we just want to test something complicated
+but not create a reusable matcher, it's possible to use the `callback` expectation:
+
+    def my_complex_assert(value):
+      # NOTE: we can also return an expectation instead of a bool
+      # ie: return value | should.eq(10).Or(20).but_be_greater_than(100)
+      resp = request.get('http://foo.com/bar', {'q': value})
+      return resp.status_code == 200
+
+    self.foo | should.pass_callback(my_complex_assert)
 
 
 ## Miscellanea

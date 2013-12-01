@@ -19,11 +19,13 @@ IGNORED_WORDS = ['should', 'to', 'be', 'a', 'an', 'is', 'the', 'as']
 matchers = {}
 # Map of normalized matcher aliases as normalized:alias
 normalized = {}
+# Help messages associated to matchers
+helpmatchers = {}
 
 
 class ContextManagerResult(object):
     """ When an expression is used in a `with` statement we capture the params
-        in the __exit__ method of the expression context managet with this class,
+        in the __exit__ method of the expression context manager with this class,
         this allows to pass it to the matchers as the value to test, which is mostly
         useful for the raise/throw one.
     """
@@ -37,10 +39,14 @@ class ContextManagerResult(object):
         return repr(self.exc_value)
 
 
-def register(matcher, *aliases):
+def register(matcher, *aliases, docstr=None):
     """ Register a matcher associated to one or more aliases. Each alias
         given is also normalized.
     """
+    if docstr is None:
+        docstr = matcher.__doc__ if matcher.__doc__ is not None else ''
+    helpmatchers[matcher] = docstr.strip()
+
     for alias in aliases:
         matchers[alias] = matcher
         # Map a normalized version of the alias
@@ -54,7 +60,6 @@ def register(matcher, *aliases):
 def unregister(matcher):
     """ Unregister a matcher (or alias) from the registry
     """
-
     # If it's a string handle it like an alias
     if isinstance(matcher, basestring) and matcher in matchers:
         matcher = matchers[matcher]
@@ -67,6 +72,10 @@ def unregister(matcher):
         norms = [k for k, v in normalized.iteritems() if v == alias]
         for norm in norms:
             del normalized[norm]
+
+    # Remove help docstring
+    if matcher in helpmatchers:
+        del helpmatchers[matcher]
 
     return len(aliases) > 0
 
@@ -84,8 +93,8 @@ def normalize(alias):
 
 def lookup(alias):
     """ Tries to find a matcher callable associated to the given alias. If
-    an exact match does not exists it will try normalizing it and even
-    removing underscores to find one.
+        an exact match does not exists it will try normalizing it and even
+        removing underscores to find one.
     """
 
     if alias in matchers:
@@ -112,6 +121,19 @@ def suggest(alias, max=3, cutoff=0.5):
     similar = get_close_matches(alias, aliases, n=max, cutoff=cutoff)
 
     return similar
+
+
+def aliases():
+    """ Obtain the list of aliases """
+    return list(matchers.keys())
+
+
+def alias_help(alias):
+    """ Get help for the given alias """
+    matcher = lookup(alias)
+    if not matcher:
+        return None
+    return helpmatchers.get(matcher)
 
 
 # Matchers should be defined with verbose aliases to allow the use of
@@ -192,6 +214,7 @@ class TypeMatcher(BaseMatcher):
 
 
 class IsInteger(TypeMatcher):
+    """ Check if the value is an integer """
     try:
         types = (int, long)
     except:
@@ -200,16 +223,19 @@ class IsInteger(TypeMatcher):
 
 
 class IsFloat(TypeMatcher):
+    """ Check if the value is a float """
     types = float
     expected = 'a float'
 
 
 class IsComplex(TypeMatcher):
+    """ Check if the value is a complex number """
     types = complex
     expected = 'a complex number'
 
 
 class IsNumeric(TypeMatcher):
+    """ Check if the value is a numeric type """
     try:
         types = (int, long, float, complex)
     except:
@@ -218,6 +244,7 @@ class IsNumeric(TypeMatcher):
 
 
 class IsString(TypeMatcher):
+    """ Check if the value is a string """
     try:
         types = basestring
     except:
@@ -226,11 +253,13 @@ class IsString(TypeMatcher):
 
 
 class IsStr(TypeMatcher):
+    """ Check if the value is a str """
     types = str
     expected = 'a str'
 
 
 class IsUnicode(TypeMatcher):
+    """ Check if the value is an unicode string """
     try:
         types = unicode
     except:
@@ -239,57 +268,68 @@ class IsUnicode(TypeMatcher):
 
 
 class IsByteArray(TypeMatcher):
+    """ Check if the value is a bytearray """
     types = 'bytearray'
     expected = 'a bytearray'
 
 
 class IsBuffer(TypeMatcher):
+    """ Check if the value is a buffer """
     types = 'buffer'
     expected = 'a buffer'
 
 
 class IsXrange(TypeMatcher):
+    """ Check if the value is an xrange """
     types = 'xrange'
     expected = 'an xrange'
 
 
 class IsDict(TypeMatcher):
+    """ Check if the value is a dict """
     types = dict
     expected = 'a dict'
 
 
 class IsList(TypeMatcher):
+    """ Check if the value is a list """
     types = list
     expected = 'a list'
 
 
 class IsTuple(TypeMatcher):
+    """ Check if the value is a tuple """
     types = tuple
     expected = 'a tuple'
 
 
 class IsSet(TypeMatcher):
+    """ Check if the value is a set """
     types = set
     expected = 'a set'
 
 
 class IsFrozenSet(TypeMatcher):
+    """ Check if the value is a frozenset """
     types = frozenset
     expected = 'a frozenset'
 
 
 class IsFunction(TypeMatcher):
+    """ Check if the value is a function """
     import types
     types = types.FunctionType
     expected = 'a function'
 
 
 class IsBool(TypeMatcher):
+    """ Check if the value is a bool """
     types = bool
     expected = 'a bool'
 
 
 class IsClass(BaseMatcher):
+    """ Check if the value is a class """
     def _matches(self, item):
         import inspect
         return inspect.isclass(item)
@@ -492,8 +532,6 @@ register(RaisesError,
          'throws_an_error', 'throws_an_exception', 'throws', 'throw')
 
 
-from copy import deepcopy
-
 
 class Changes(BaseMatcher):
     """ Checks if calling a value changes something """
@@ -519,6 +557,7 @@ class Changes(BaseMatcher):
             before = self.watcher
 
         # keep a snapshot of the value in case it's mutable
+        from copy import deepcopy
         self.before = deepcopy(before)
 
         func(*params)
@@ -556,7 +595,10 @@ register(Changes,
 
 
 class Callback(BaseMatcher):
-    """ Checks against an user supplied callback """
+    """ Checks against an user supplied callback. The callback
+        can should return True to indicate a successful match or
+        False to indicate an unsuccessful one. 
+    """
 
     def __init__(self, callback):
         self.callback = callback
