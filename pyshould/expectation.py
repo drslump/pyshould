@@ -59,9 +59,14 @@ class Expectation(object):
         """ Evaluate against the left hand side of the OR (pipe) operator. Since in
             Python this operator has a fairly low precedence this method will usually
             be called once the whole right hand side of the expression has been evaluated.
+
+            Note: We clone and return that clone instead of the self object because
+                  resolving resets the expectation, when using a REPL it's nice to see
+                  the expectation explanation after a successful one.
         """
+        clone = self.clone()
         self.resolve(lvalue)
-        return self
+        return clone
 
     def resolve(self, value=None):
         """ Resolve the current expression against the supplied value """
