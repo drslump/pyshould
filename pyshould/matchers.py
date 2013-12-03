@@ -168,13 +168,18 @@ register(hc.only_contains,
 register(hc.close_to,
          'be_close_to')
 register(hc.greater_than,
-         'be_greater_than', 'be_gt')
+         'be_greater_than', 'be_greater', 'be_gt',
+         'be_above', 
+         'be_more_than', 'be_more')
 register(hc.greater_than_or_equal_to,
-         'be_greater_than_or_equal_to', 'be_ge')
+         'be_greater_than_or_equal_to', 'be_greater_or_equal', 'be_ge', 
+         'be_more_than_or_equal', 'be_more_or_equal' 
+         'be_at_least')
 register(hc.less_than,
-         'be_less_than', 'be_lt')
+         'be_less_than', 'be_less', 'be_lt', 'be_below')
 register(hc.less_than_or_equal_to,
-         'be_less_than_or_equal_to', 'be_le')
+         'be_less_than_or_equal_to', 'be_less_or_equal', 'be_le', 
+         'be_at_most')
 register(hc.has_length,
          'have_length', 'have_len')
 register(hc.has_property,
