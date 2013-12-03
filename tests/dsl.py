@@ -160,6 +160,26 @@ class DslTestCase(unittest.TestCase):
         m1.resolve(True)
         m2.resolve(False)
 
+    def test_nested_matchers(self):
+        d = dict(a='A', b='B', c='C')
+        d | should.have_entries({
+            'a': should.be_str.and_not_empty,
+            'b': should.be_str,
+            'c': should_not.eq('Z')
+        })
+
+    def test_nested_matchers_failure(self):
+        d = dict(a='A', b='B', c='C')
+        try:
+            d | should.have_entries({
+                'a': should.be_str.and_not_empty,
+                'z': should.be_str,
+                'c': should_not.eq('Z')
+            })
+            raise AssertionError('We should not reach this point')
+        except AssertionError:
+            pass
+
     def test_equality(self):
         m = should.be_int.and_eq(1)
         self.assertEqual(1, m)

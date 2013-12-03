@@ -222,26 +222,28 @@ class Expectation(object):
             if not obj.deferred:
                 obj.resolve(obj.value)
 
-        # Normalize the name to split by underscore
+        # Normalize the name
         name = re.sub(r'([a-z])([A-Z])', r'\1_\2', name)
         parts = name.lower().split('_')
+
         # Check if we have a coordinator as first item
+        expr = []
         if parts[0] == 'and':
-            obj.expr.append(OPERATOR.AND)
+            expr.append(OPERATOR.AND)
             parts.pop(0)
         elif parts[0] == 'or':
-            obj.expr.append(OPERATOR.OR)
+            expr.append(OPERATOR.OR)
             parts.pop(0)
         elif parts[0] == 'but':
-            obj.expr.append(OPERATOR.BUT)
+            expr.append(OPERATOR.BUT)
             parts.pop(0)
         # If no coordinator is given assume a default one
         elif len(obj.expr):
-            obj.expr.append(obj.def_op)
+            expr.append(obj.def_op)
 
         # Negation can come just after a combinator (ie: .and_not_be_equal)
         if 'not' in parts:
-            obj.expr.append(OPERATOR.NOT)
+            expr.append(OPERATOR.NOT)
             parts.pop(parts.index('not'))
 
         if len(parts):
@@ -249,8 +251,14 @@ class Expectation(object):
         else:
             name = obj.last_matcher or obj.def_matcher
 
-        obj.matcher = obj._find_matcher(name)
-        obj.last_matcher = name
+        # Find a matcher for the computed name
+        try:
+            obj.matcher = obj._find_matcher(name)
+            obj.last_matcher = name
+            obj.expr.extend(expr)
+        except KeyError as ex:
+            # Signal correctly for `hasattr`
+            raise AttributeError(str(ex))
 
         return obj
 
