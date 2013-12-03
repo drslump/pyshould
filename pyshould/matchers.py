@@ -688,7 +688,7 @@ class RegexMatcher(BaseMatcher):
             for ch in flags.upper():
                 self.flags |= getattr(re, ch)
         else:
-            self.flags = 0
+            self.flags = flags
 
     def _matches(self, item):
         match = re.search(self.regex, item, self.flags)
