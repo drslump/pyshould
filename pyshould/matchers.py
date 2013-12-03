@@ -431,8 +431,8 @@ class IsFalsy(BaseMatcher):
 
 register(IsTrue, 'be_true')
 register(IsFalse, 'be_false')
-register(IsTruthy, 'be_a_truthy_value', 'be_truthy')
-register(IsFalsy, 'be_a_falsy_value', 'be_falsy')
+register(IsTruthy, 'be_a_truthy_value', 'be_truthy', 'be_ok')
+register(IsFalsy, 'be_a_falsy_value', 'be_falsy', 'be_ko')
 
 
 class IsEmpty(BaseMatcher):
