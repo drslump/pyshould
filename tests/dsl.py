@@ -124,6 +124,12 @@ class DslTestCase(unittest.TestCase):
             object = {}
             object['non-existing-key']
 
+    def test_match(self):
+        "foo" | should.match('^\w+$')
+
+    def test_match_flags(self):
+        "FOO" | should.match('^[a-z]+$', 'i')
+
     def test_callback_matcher(self):
         1 | should.pass_callback(lambda x: x == 1)
 

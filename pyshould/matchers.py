@@ -23,6 +23,13 @@ normalized = {}
 helpmatchers = {}
 
 
+# All textual representation types in Python 2/3
+try:
+    text_types = (basestring, str, unicode)  # python 2
+except NameError:
+    text_types = (str,)
+
+
 class ContextManagerResult(object):
     """ When an expression is used in a `with` statement we capture the params
         in the __exit__ method of the expression context manager with this class,
@@ -60,7 +67,7 @@ def unregister(matcher):
     """ Unregister a matcher (or alias) from the registry
     """
     # If it's a string handle it like an alias
-    if isinstance(matcher, basestring) and matcher in matchers:
+    if isinstance(matcher, six.string_types) and matcher in matchers:
         matcher = matchers[matcher]
 
     # Find all aliases associated to the matcher
@@ -241,52 +248,53 @@ class IsComplex(TypeMatcher):
 class IsNumeric(TypeMatcher):
     """ Check if the value is a numeric type """
     try:
-        types = (int, long, float, complex)
-    except:
-        types = (int, float, complex)  # Python 3
+        types = (int, long, float, complex)  # python 2
+    except NameError:
+        types = (int, float, complex)
+
     expected = 'a numeric type'
 
 
 class IsString(TypeMatcher):
     """ Check if the value is a string """
-    try:
-        types = basestring
-    except:
-        types = str  # Python 3
+    types = text_types
     expected = 'a string'
 
 
 class IsStr(TypeMatcher):
     """ Check if the value is a str """
-    types = str
+    try:
+        types = (basestring, str)  # python 2
+    except NameError:
+        types = str
+
     expected = 'a str'
 
 
 class IsUnicode(TypeMatcher):
     """ Check if the value is an unicode string """
     try:
-        types = unicode
-    except:
-        types = str  # Python 3
+        types = unicode  # python 2
+    except NameError:
+        types = str
+
     expected = 'a unicode string'
+
+
+class IsBinary(TypeMatcher):
+    """ Check if value is a binary string """
+    try:
+        types = bytes  # python 3
+    except NameError:
+        types = str
+
+    expected = 'a binary string'
 
 
 class IsByteArray(TypeMatcher):
     """ Check if the value is a bytearray """
-    types = 'bytearray'
+    types = bytearray
     expected = 'a bytearray'
-
-
-class IsBuffer(TypeMatcher):
-    """ Check if the value is a buffer """
-    types = 'buffer'
-    expected = 'a buffer'
-
-
-class IsXrange(TypeMatcher):
-    """ Check if the value is an xrange """
-    types = 'xrange'
-    expected = 'an xrange'
 
 
 class IsDict(TypeMatcher):
@@ -319,6 +327,12 @@ class IsFrozenSet(TypeMatcher):
     expected = 'a frozenset'
 
 
+class IsBool(TypeMatcher):
+    """ Check if the value is a bool """
+    types = bool
+    expected = 'a bool'
+
+
 class IsFunction(TypeMatcher):
     """ Check if the value is a function """
     import types
@@ -326,10 +340,14 @@ class IsFunction(TypeMatcher):
     expected = 'a function'
 
 
-class IsBool(TypeMatcher):
-    """ Check if the value is a bool """
-    types = bool
-    expected = 'a bool'
+class IsGenerator(BaseMatcher):
+    """ Checks if the value is a generator function """
+    def _matches(self, item):
+        import inspect
+        return inspect.isgeneratorfunction(item)
+
+    def describe_to(self):
+        desc.append_text('a generator function')
 
 
 class IsClass(BaseMatcher):
@@ -349,9 +367,8 @@ register(IsNumeric, 'be_numeric')
 register(IsString, 'be_a_string')
 register(IsStr, 'be_a_str')
 register(IsUnicode, 'be_an_unicode_string', 'be_an_unicode')
+register(IsUnicode, 'be_a_binary_string', 'be_a_binary')
 register(IsByteArray, 'be_a_bytearray', 'be_a_byte_array')
-register(IsBuffer, 'be_a_buffer')
-register(IsXrange, 'be_an_xrange')
 register(IsDict, 'be_a_dictionary', 'be_a_dict')
 register(IsList, 'be_a_list', 'be_an_array')
 register(IsTuple, 'be_a_tuple')
@@ -359,6 +376,7 @@ register(IsSet, 'be_a_set')
 register(IsFrozenSet, 'be_a_frozenset', 'be_a_frozen_set')
 register(IsFunction, 'be_a_function', 'be_a_func')
 register(IsBool, 'be_a_boolean', 'be_a_bool')
+register(IsGenerator, 'be_a_generator')
 register(IsClass, 'be_a_class')
 
 
@@ -657,3 +675,27 @@ class MockCalled(BaseMatcher):
             desc.append_text('was not called')
 
 register(MockCalled, 'called', 'invoked')
+
+
+class RegexMatcher(BaseMatcher):
+    """ Checks against a regular expression """
+
+    def __init__(self, regex, flags=0):
+        self.regex = regex
+
+        if isinstance(flags, text_types):
+            self.flags = 0
+            for ch in flags.upper():
+                self.flags |= getattr(re, ch)
+        else:
+            self.flags = 0
+
+    def _matches(self, item):
+        match = re.search(self.regex, item, self.flags)
+        return match is not None
+
+    def describe_to(self, desc):
+        desc.append_text('matching ')
+        desc.append_text('/{0}/'.format(self.regex))
+
+register(RegexMatcher, 'match', 'match_regex', 'match_regexp', 'be_matched_by')
