@@ -691,6 +691,9 @@ class RegexMatcher(BaseMatcher):
             self.flags = flags
 
     def _matches(self, item):
+        # Make sure we are matching against a string
+        hc.assert_that(item, IsString())
+        
         match = re.search(self.regex, item, self.flags)
         return match is not None
 

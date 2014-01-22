@@ -130,6 +130,12 @@ class DslTestCase(unittest.TestCase):
     def test_match_flags(self):
         "FOO" | should.match('^[a-z]+$', 'i')
 
+    def test_match_non_string(self):
+        self.assertRaises(
+            AssertionError,
+            lambda: 10 | should.match('^\d+')
+        )
+
     def test_callback_matcher(self):
         1 | should.pass_callback(lambda x: x == 1)
 
