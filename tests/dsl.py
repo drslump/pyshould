@@ -268,6 +268,16 @@ class DslTestCase(unittest.TestCase):
             from pyshould import patch_mockito
             w | should.have_len(1)
             w[0].category | should.be(DeprecationWarning)
+
+    def test_compatibility_with_assert(self):
+
+        assert 10 | should.be_less_than(20)
+
+        try:
+            assert 10 | should.be_greater_than(20)
+            raise RuntimeError('Should not reach this point')
+        except AssertionError:
+            pass
             
 
 class NonEmptyConstructorException(Exception):
