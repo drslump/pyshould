@@ -39,6 +39,7 @@ class Expectation(object):
         self.description = description
         self.def_op = def_op
         self.def_matcher = def_matcher
+        self.transform = None
 
     def reset(self):
         """ Resets the state of the expression """
@@ -92,6 +93,16 @@ class Expectation(object):
             this method to apply a special configuration when performing the assertion.
             If the assertion fails it should raise an AssertionError.
         """
+
+        # Transform the value under test if we have registered a function to do so
+        if self.transform:
+            try:
+                value = self.transform(value)
+            except:
+                import sys
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                raise AssertionError('Error applying transformation <{0}>: {2}: {3}'.format(
+                    self.transform.__name__, value, exc_type.__name__, exc_obj)) 
 
         # To support the syntax `any_of(subject) | should ...` we check if the
         # value to check is an Expectation object and if it is we use the descriptor
@@ -267,6 +278,13 @@ class Expectation(object):
             arguments. If we're in deferred mode we don't resolve the matcher yet,
             it'll be done in the __ror__ overload.
         """
+        # When called directly (ie: should(foo).xxx) register the param as a transform 
+        if len(args) == 1 and hasattr(args[0], '__call__') and not self.expr and not self.matcher:
+            # We have to clone the expectation so we play fair with the `should` shortcut
+            clone = self.clone()
+            clone.transform = args[0]
+            return clone
+
         if not self.matcher:
             raise TypeError('No matchers set. Usage: <value> | should.<matcher>(<expectation>)')
 

@@ -188,7 +188,33 @@ class DslTestCase(unittest.TestCase):
                 'z': should.be_str,
                 'c': should_not.eq('Z')
             })
-            raise AssertionError('We should not reach this point')
+            raise RuntimeError('We should not reach this point')
+        except AssertionError:
+            pass
+
+    def test_apply(self):
+        import json
+        d = '{"foo":"bar"}'
+
+        d | should(json.loads).have_key('foo')
+
+        should_json = should(json.loads)
+        d | should_json.have_key('foo')
+        '{"bar": 10}' | should_json.have_key('bar')
+
+        try:
+            d | should(json.loads).have_key('bar')
+            raise RuntimeError('We should not reach this point')
+        except AssertionError:
+            pass
+
+    def test_apply_error(self):
+        import json
+        d = '{malformed}'
+
+        try:
+            d | should(json.loads).be_anything
+            raise RuntimeError('We should not reach this point')
         except AssertionError:
             pass
 

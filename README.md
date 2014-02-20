@@ -211,6 +211,26 @@ out of the box:
     verify(MyClass).my_method(should.be_truthy, should.eq(10))
 
 
+## Transforming values
+
+An useful feature when integrating the expectations with a mocking library is to be
+able to transform a value before asserting it. This can be triggered by passing a
+callable as only argument to a non initialized expression (ie: `should(callable)`).
+
+For instance you've mocked a call that will receive a Json serialized string but you
+want to test if it contains a given key. Check the following example:
+
+    mock('{"username": "drslump", "password": "foobar"}')
+    mock.assert_called_with( should(json.loads).have_key('username') )
+
+If you need to use the same transform often you could also create an expectation for
+it:
+
+    should_json = should(json.loads)
+    mock.assert_called_with( should_json.have_key('username') )
+    d | should_json.have_key('username')
+
+
 ## Custom expectations
 
 Creating your custom expectations is fairly easy, have a look at the `matchers.py`
