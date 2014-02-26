@@ -198,7 +198,7 @@ Thanks to the great folks @clarete and @gabrielfalcao from
 object to expose special properties for testing any value. To enable this
 feature you must import the `pyshould.patch` module.
 
-> **WARNING** Once the `patch` module is imported it will monkey path the
+> **WARNING** Once the `patch` module is imported it will *monkey patch* the
 root object from which all variables are extended from in your Python
 runtime. This means that every object will be extended with the following
 properties: `should`, `should_not`, `should_all`, `should_any` and `should_none`.
