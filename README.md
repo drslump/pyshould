@@ -189,6 +189,28 @@ expect(any_of(1,3)).to_equal(1)
 ```
 
 
+### Patching the root object
+
+> **NOTE** This is only supported when running under cpython.
+
+Thanks to the great folks @clarete and @gabrielfalcao from 
+[sure](https://github.com/gabrielfalcao/sure) it's possible to patch the root
+object to expose special properties for testing any value. To enable this
+feature you must import the `pyshould.patch` module.
+
+> **WARNING** Once the `patch` module is imported it will monkey path the
+root object from which all variables are extended from in your Python
+runtime. This means that every object will be extended with the following
+properties: `should`, `should_not`, `should_all`, `should_any` and `should_none`.
+
+    import pyshould.patch
+
+    'foo'.should.eq('foo')
+    data = {'foo': 'bar'}
+    data.should_not.have_key('lorem')
+    data.keys().should_all.be_string()
+
+
 ## Integration with third parties
 
 Broadly speaking, *pyshould* expressions overload Python's equality operator, so
