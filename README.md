@@ -60,8 +60,9 @@ given between parens, as with a normal method call. It will be used as an argume
 to the matcher function. If the matcher doesn't require an expected value there is 
 no need to use it as a method call.
 
-> **TIP** Run the following snippet to print all the configured expectations with
-a description of what they do: `import pyshould; pyshould.print_help()`
+> **TIP** Run the following to print all the configured expectations with
+a description of what they do: `python -m pyshould` (use `python -m pyshould.__main__`
+for Python 2.6)
 
 See the following examples of expectations:
 
