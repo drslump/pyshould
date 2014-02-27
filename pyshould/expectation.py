@@ -244,7 +244,7 @@ class Expectation(object):
         if name[0:2] == '__':
             raise AttributeError
 
-        # In deferred mode we always create a new instance. This avoids
+        # In factory mode we always create a new instance. This avoids
         # problems when defining multiple expectations using the `should`
         # keyword without resolving every expectation in order.
         obj = self.clone() if self.factory else self
