@@ -283,6 +283,19 @@ class DslTestCase(unittest.TestCase):
             raise RuntimeError('Should not reach this point')
         except AssertionError:
             pass
+
+    def test_repr_expr(self):
+        expr = it(10)
+        repr(expr) | should.be_a_string
+
+        expr = it(10).should.be_an_int
+        repr(expr) | should.be_a_string
+
+        expr = it(10).should.eq(10)
+        repr(expr) | should.be_a_string
+
+    def test_repr_deferred_expr(self):
+        repr(should.be_empty) | should.be_a_string
             
 
 class NonEmptyConstructorException(Exception):

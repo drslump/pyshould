@@ -356,9 +356,15 @@ class Expectation(object):
         return not self.__eq__(other)
 
     def __repr__(self):
+        """ This is specially useful when using the library on an interactive interpreter
+        """
         exp = self.clone()
         if exp.matcher:
             exp._init_matcher()
+        
+        if not exp.expr:
+            return 'Uninitialized expectation <{0}>'.format(self.__class__.__name__)
+
         matcher = exp.evaluate()
         return str(matcher)
 
