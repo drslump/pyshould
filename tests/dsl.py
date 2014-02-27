@@ -35,6 +35,11 @@ class DslTestCase(unittest.TestCase):
         self.assertIsInstance(any_of([]), Expectation)
         self.assertIsInstance(none_of([]), Expectation)
 
+    def test_should_property(self):
+        a = it(10)
+        it(10).should.eq(10)
+        it(10).should_not.eq(20)
+
     def test_should(self):
         self.assertRaises(AssertionError, lambda: 0 | should.equal(1))
 

@@ -214,6 +214,29 @@ class Expectation(object):
         """ Just an alias to described_as """
         return self.described_as(description, *args)
 
+    def __getattribute__(self, name):
+        """ Hijack property access to handle some special cases.
+            Since we might have patched the root object to include
+            the `should` properties, we have to capture their use
+            here.
+        """
+
+        # Ignore .should. style properties
+        lowname = name.lower()
+        if lowname == 'should':
+            return self
+        if lowname == 'should_not':
+            return ExpectationNot(
+                self.value,
+                self.deferred,
+                self.description,
+                self.factory,
+                self.def_op,
+                self.def_matcher
+            )
+
+        return object.__getattribute__(self, name)
+
     def __getattr__(self, name):
         """ Overload property access to interpret them as matchers. """
 
