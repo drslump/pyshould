@@ -273,6 +273,13 @@ but not create a reusable matcher, it's possible to use the `callback` expectati
     self.foo | should.pass_callback(my_complex_assert)
 
 
+## Caveats
+
+The *pipe syntax* has an incompatibility when the subject under tests has an
+overloaded `__or__` operator [and is not a builtin type](http://docs.python.org/2/reference/datamodel.html#coercion-rules).
+In those cases the only option is to use an alternative syntax for that test.
+
+
 ## Miscellanea
 
 I find it extremely convenient to include `should` as a keyword under my editor 
