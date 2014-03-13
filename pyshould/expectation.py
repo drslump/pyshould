@@ -207,7 +207,9 @@ class Expectation(object):
 
     def described_as(self, description, *args):
         """ Specify a custom message for the matcher """
-        self.description = description.format(*args)
+        if len(args):
+            description = description.format(*args)
+        self.description = description
         return self
 
     def desc(self, description, *args):
