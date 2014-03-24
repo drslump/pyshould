@@ -6,6 +6,9 @@ import re
 import hamcrest as hc
 from difflib import get_close_matches
 from hamcrest.core.base_matcher import BaseMatcher
+from hamcrest.library.collection.isdict_containingentries import IsDictContainingEntries
+from hamcrest.core.helpers.wrap_matcher import wrap_matcher
+
 
 __author__ = "Ivan -DrSlump- Montes"
 __email__ = "drslump@pollinimini.net"
@@ -702,3 +705,33 @@ class RegexMatcher(BaseMatcher):
         desc.append_text('/{0}/'.format(self.regex))
 
 register(RegexMatcher, 'match', 'match_regex', 'match_regexp', 'be_matched_by')
+
+
+class HasAttributes(IsDictContainingEntries):
+    """ Checks against a regular expression """
+
+    def __init__(self, value_matchers):
+        base_dict = {}
+        for key, value in value_matchers.items():
+            base_dict[key] = wrap_matcher(value)
+        super(HasAttributes, self).__init__(base_dict)
+
+    def matches(self, inst, mismatch_description=None):
+        # Make sure we are matching against a string
+        try:
+            keys = dir(inst)
+            attributes = dict((key, getattr(inst, key)) for key in keys  if '__' not in key)
+        except Exception as ex:
+            if mismatch_description:
+                mismatch_description.append_text('unable to extract attributes from value')
+            return False
+
+        return super(HasAttributes, self).matches(attributes, mismatch_description)
+
+    def describe_to(self, desc):
+        desc.append_text('a class as ')
+        super(HasAttributes, self).describe_to(desc)
+
+
+register(HasAttributes,
+         'have_the_properties', 'contain_the_properties', 'have_the_attributes', 'contain_the_attributes')

@@ -197,6 +197,21 @@ class DslTestCase(unittest.TestCase):
         except AssertionError:
             pass
 
+    def test_have_props(self):
+        d = type("CommentForm", (object,), {'text': 'textvalue', 'author': 'the_author'})
+        d | should.have_properties({
+            'text': should.eq('textvalue'),
+            'author': should.eq('the_author'),
+        })
+
+    def test_have_props_non_class(self):
+        d = "fail"
+        with self.assertRaises(AssertionError):
+            d | should.have_properties({
+                'text': should.eq('textvalue2'),
+                'author': should.eq('the_author'),
+            })
+
     def test_apply(self):
         import json
         d = '{"foo":"bar"}'
