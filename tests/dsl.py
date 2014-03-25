@@ -197,20 +197,56 @@ class DslTestCase(unittest.TestCase):
         except AssertionError:
             pass
 
-    def test_have_props(self):
+    def test_class_has_props(self):
         d = type("CommentForm", (object,), {'text': 'textvalue', 'author': 'the_author'})
+
         d | should.have_properties({
             'text': should.eq('textvalue'),
             'author': should.eq('the_author'),
         })
 
-    def test_have_props_non_class(self):
+    def test_object_has_props(self):
+        Cls = type("CommentForm", (object,), {'text': '', 'author': ''})
+        d = Cls()
+        d.text = 'textvalue'
+        d.author = 'the_author'
+
+        d | should.have_properties({
+            'text': should.eq('textvalue'),
+            'author': should.eq('the_author'),
+        })
+
+    def test_object_has_dynamic_props(self):
+        Cls = type("CommentForm", (object,), {})
+        d = Cls()
+        d.added_text = 'textvalue'
+        d.added_author = 'the_author'
+
+        d | should.have_properties({
+            'added_text': should.eq('textvalue'),
+            'added_author': should.eq('the_author'),
+        })
+
+    def test_has_props_non_class(self):
         d = "fail"
+
         with self.assertRaises(AssertionError):
             d | should.have_properties({
                 'text': should.eq('textvalue2'),
                 'author': should.eq('the_author'),
             })
+
+    def test_old_style_class_has_props(self):
+        class CommentForm:
+            text_field = "textvalue"
+            author_field = "the_author"
+
+        d = CommentForm()
+
+        d | should.have_properties({
+            'text_field': should.eq('textvalue'),
+            'author_field': should.eq('the_author'),
+        })
 
     def test_apply(self):
         import json

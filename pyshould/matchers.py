@@ -707,17 +707,26 @@ class RegexMatcher(BaseMatcher):
 register(RegexMatcher, 'match', 'match_regex', 'match_regexp', 'be_matched_by')
 
 
-class HasAttributes(IsDictContainingEntries):
-    """ Checks against a regular expression """
+class IsObjectContainingEntries(IsDictContainingEntries):
+    """Matches if object has the properties from a given dict whose values and keys satisfy a given matcher.
+    Examples::
+        :param inst: The instance or class.
+        :param mismatch_description: The description in case of failure.
+
+        have_properties({
+            'prop1': should.eq('value1'),
+            'prop2': should.eq('value2')
+        })
+    """
 
     def __init__(self, value_matchers):
         base_dict = {}
         for key, value in value_matchers.items():
             base_dict[key] = wrap_matcher(value)
-        super(HasAttributes, self).__init__(base_dict)
+        super(IsObjectContainingEntries, self).__init__(base_dict)
 
     def matches(self, inst, mismatch_description=None):
-        # Make sure we are matching against a string
+        # Make sure we are matching against a dict
         try:
             keys = dir(inst)
             attributes = dict((key, getattr(inst, key)) for key in keys  if '__' not in key)
@@ -726,12 +735,12 @@ class HasAttributes(IsDictContainingEntries):
                 mismatch_description.append_text('unable to extract attributes from value')
             return False
 
-        return super(HasAttributes, self).matches(attributes, mismatch_description)
+        return super(IsObjectContainingEntries, self).matches(attributes, mismatch_description)
 
     def describe_to(self, desc):
         desc.append_text('a class as ')
-        super(HasAttributes, self).describe_to(desc)
+        super(IsObjectContainingEntries, self).describe_to(desc)
 
 
-register(HasAttributes,
+register(IsObjectContainingEntries,
          'have_the_properties', 'contain_the_properties', 'have_the_attributes', 'contain_the_attributes')
