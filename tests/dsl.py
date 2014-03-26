@@ -201,8 +201,8 @@ class DslTestCase(unittest.TestCase):
         d = type("CommentForm", (object,), {'text': 'textvalue', 'author': 'the_author'})
 
         d | should.have_properties({
-            'text': should.eq('textvalue'),
-            'author': should.eq('the_author'),
+            'text': 'textvalue',
+            'author': 'the_author',
         })
 
     def test_object_has_props(self):
@@ -212,8 +212,8 @@ class DslTestCase(unittest.TestCase):
         d.author = 'the_author'
 
         d | should.have_properties({
-            'text': should.eq('textvalue'),
-            'author': should.eq('the_author'),
+            'text': 'textvalue',
+            'author': 'the_author',
         })
 
     def test_object_has_dynamic_props(self):
@@ -222,18 +222,34 @@ class DslTestCase(unittest.TestCase):
         d.added_text = 'textvalue'
         d.added_author = 'the_author'
 
-        d | should.have_properties({
-            'added_text': should.eq('textvalue'),
-            'added_author': should.eq('the_author'),
+        d | should.have_attrs({
+            'added_text': 'textvalue',
+            'added_author': should.be_a_string(),
         })
+
+    def test_object_has_dynamic_props_with_kwargs(self):
+        Cls = type("CommentForm", (object,), {})
+        d = Cls()
+        d.added_text = 'textvalue'
+        d.added_author = 'the_author'
+
+        d | should.have_attrs(added_text='textvalue', added_author=should.be_a_string())
+
+    def test_object_has_dynamic_props_with_non_existing_kwargs(self):
+        Cls = type("CommentForm", (object,), {})
+        d = Cls()
+        d.added_text = 'textvalue'
+        d.added_author = 'the_author'
+        with self.assertRaises(AssertionError):
+            d | should.have_attrs(added_text='textvalue', added_author=should.be_a_string(), fake='foo')
 
     def test_has_props_non_class(self):
         d = "fail"
 
         with self.assertRaises(AssertionError):
             d | should.have_properties({
-                'text': should.eq('textvalue2'),
-                'author': should.eq('the_author'),
+                'text': should.be_a_string(),
+                'author': 'the_author',
             })
 
     def test_old_style_class_has_props(self):
@@ -244,8 +260,8 @@ class DslTestCase(unittest.TestCase):
         d = CommentForm()
 
         d | should.have_properties({
-            'text_field': should.eq('textvalue'),
-            'author_field': should.eq('the_author'),
+            'text_field': 'textvalue',
+            'author_field': 'the_author',
         })
 
     def test_apply(self):

@@ -718,9 +718,14 @@ class IsObjectContainingEntries(IsDictContainingEntries):
             'prop2': should.eq('value2')
         })
     """
+    hidden = ['should_not', 'should_all', 'should_any', 'should', 'should_none']
 
-    def __init__(self, value_matchers):
+    def __init__(self, value_matchers=None, **kwargs):
         base_dict = {}
+
+        if value_matchers is None:
+            value_matchers = kwargs
+
         for key, value in value_matchers.items():
             base_dict[key] = wrap_matcher(value)
         super(IsObjectContainingEntries, self).__init__(base_dict)
@@ -729,10 +734,10 @@ class IsObjectContainingEntries(IsDictContainingEntries):
         # Make sure we are matching against a dict
         try:
             keys = dir(inst)
-            attributes = dict((key, getattr(inst, key)) for key in keys  if '__' not in key)
+            attributes = dict((key, getattr(inst, key)) for key in keys  if '__' not in key and key not in self.hidden)
         except Exception as ex:
             if mismatch_description:
-                mismatch_description.append_text('unable to extract attributes from value')
+                mismatch_description.append_text('unable to extract attributes from value: {0}'.format(ex))
             return False
 
         return super(IsObjectContainingEntries, self).matches(attributes, mismatch_description)
@@ -743,4 +748,5 @@ class IsObjectContainingEntries(IsDictContainingEntries):
 
 
 register(IsObjectContainingEntries,
-         'have_the_properties', 'contain_the_properties', 'have_the_attributes', 'contain_the_attributes')
+         'have_the_properties', 'contain_the_properties', 'have_the_attributes', 'contain_the_attributes',
+         'have_props', 'contain_props', 'have_attrs', 'contain_attrs')
