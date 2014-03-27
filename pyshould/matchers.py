@@ -736,13 +736,20 @@ class IsObjectContainingEntries(IsDictContainingEntries):
         # Make sure we are matching against a dict
         try:
             keys = dir(inst)
-            attributes = dict((key, getattr(inst, key)) for key in keys  if '__' not in key and key not in self.hidden)
+            attributes = dict(
+                (key, getattr(inst, key))
+                for key in dir(inst)
+                if not key.startswith('__')
+                and key not in IsObjectContainingEntries.hidden
+            )
         except Exception as ex:
             if mismatch_description:
-                mismatch_description.append_text('unable to extract attributes from value: {0}'.format(ex))
+                mismatch_description.append_text(
+                    'unable to extract attributes from value: {0}'.format(ex))
             return False
 
-        return super(IsObjectContainingEntries, self).matches(attributes, mismatch_description)
+        return super(IsObjectContainingEntries, self).matches(
+            attributes, mismatch_description)
 
     def describe_to(self, desc):
         desc.append_text('a class as ')
