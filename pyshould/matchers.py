@@ -708,7 +708,9 @@ register(RegexMatcher, 'match', 'match_regex', 'match_regexp', 'be_matched_by')
 
 
 class IsObjectContainingEntries(IsDictContainingEntries):
-    """Matches if object has the properties from a given dict whose values and keys satisfy a given matcher.
+    """Matches if object has the properties from a given dict whose values and
+    keys satisfy a given matcher.
+
     Examples::
         :param inst: The instance or class.
         :param mismatch_description: The description in case of failure.
@@ -718,7 +720,7 @@ class IsObjectContainingEntries(IsDictContainingEntries):
             'prop2': should.eq('value2')
         })
     """
-    hidden = ['should_not', 'should_all', 'should_any', 'should', 'should_none']
+    hidden = set(['should_not', 'should_all', 'should_any', 'should', 'should_none'])
 
     def __init__(self, value_matchers=None, **kwargs):
         base_dict = {}
