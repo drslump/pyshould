@@ -6,6 +6,9 @@ import re
 import hamcrest as hc
 from difflib import get_close_matches
 from hamcrest.core.base_matcher import BaseMatcher
+from hamcrest.library.collection.isdict_containingentries import IsDictContainingEntries
+from hamcrest.core.helpers.wrap_matcher import wrap_matcher
+
 
 __author__ = "Ivan -DrSlump- Montes"
 __email__ = "drslump@pollinimini.net"
@@ -702,3 +705,57 @@ class RegexMatcher(BaseMatcher):
         desc.append_text('/{0}/'.format(self.regex))
 
 register(RegexMatcher, 'match', 'match_regex', 'match_regexp', 'be_matched_by')
+
+
+class IsObjectContainingEntries(IsDictContainingEntries):
+    """Matches if object has the properties from a given dict whose values and
+    keys satisfy a given matcher.
+
+    Examples::
+        :param inst: The instance or class.
+        :param mismatch_description: The description in case of failure.
+
+        have_properties({
+            'prop1': should.eq('value1'),
+            'prop2': should.eq('value2')
+        })
+    """
+    hidden = set(['should_not', 'should_all', 'should_any', 'should', 'should_none'])
+
+    def __init__(self, value_matchers=None, **kwargs):
+        base_dict = {}
+
+        if value_matchers is None:
+            value_matchers = kwargs
+
+        for key, value in value_matchers.items():
+            base_dict[key] = wrap_matcher(value)
+        super(IsObjectContainingEntries, self).__init__(base_dict)
+
+    def matches(self, inst, mismatch_description=None):
+        # Make sure we are matching against a dict
+        try:
+            keys = dir(inst)
+            attributes = dict(
+                (key, getattr(inst, key))
+                for key in dir(inst)
+                if not key.startswith('__')
+                and key not in IsObjectContainingEntries.hidden
+            )
+        except Exception as ex:
+            if mismatch_description:
+                mismatch_description.append_text(
+                    'unable to extract attributes from value: {0}'.format(ex))
+            return False
+
+        return super(IsObjectContainingEntries, self).matches(
+            attributes, mismatch_description)
+
+    def describe_to(self, desc):
+        desc.append_text('a class as ')
+        super(IsObjectContainingEntries, self).describe_to(desc)
+
+
+register(IsObjectContainingEntries,
+         'have_the_properties', 'contain_the_properties', 'have_the_attributes', 'contain_the_attributes',
+         'have_props', 'contain_props', 'have_attrs', 'contain_attrs')
