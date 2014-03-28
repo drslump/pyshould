@@ -350,6 +350,11 @@ class Expectation(object):
             return True
         except AssertionError:
             return False
+        except RuntimeError as ex:
+            # HACK: Fabric tries to find task functions from all the imported
+            # symbols in a module, we have to raise a ValueError for it to
+            # understand that we're not :(
+            raise ValueError(str(ex))
 
     def __ne__(self, other):
         """ Overload not equal since Python will default to identity instead of negating
