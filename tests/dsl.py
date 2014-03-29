@@ -308,6 +308,13 @@ class DslTestCase(unittest.TestCase):
             lambda: self.assertNotEqual(m, 2)
         )
 
+    def test_equality_exception(self):
+        # under the hood the equality for `should` should trigger an error
+        (10 == should) | should.be_False
+        (10 == should.equal) | should.be_False
+        (10 != should) | should.be_True
+        (10 != should.equal) | should.be_True
+
     def test_mock(self):
         try:
             from unittest.mock import Mock  # Python 3.3
