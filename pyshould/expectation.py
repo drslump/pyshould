@@ -225,7 +225,7 @@ class Expectation(object):
 
         # Ignore .should. style properties
         lowname = name.lower()
-        if lowname == 'should':
+        if lowname in ('should', 'to'):
             return self
         if lowname == 'should_not':
             return ExpectationNot(

@@ -25,3 +25,6 @@ class ExpectTestCase(unittest.TestCase):
         expect(all_of(1, 2)).to_be_integer()
         expect(any_of([1, 2])).to_eq(1)
 
+    def test_ignore_keywords(self):
+        it(1).should.be_an_int()
+        expect(1).to.equal(1)
