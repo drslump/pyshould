@@ -86,7 +86,8 @@ class Expectation(object):
             raise ex
         finally:
             # Reset the state of the object so we can use it again
-            self.reset()
+            if self.deferred:
+                self.reset()
 
     def _assertion(self, matcher, value):
         """ Perform the actual assertion for the given matcher and value. Override
