@@ -370,7 +370,16 @@ class DslTestCase(unittest.TestCase):
 
     def test_repr_deferred_expr(self):
         repr(should.be_empty) | should.be_a_string
-            
+
+    def test_base_except(self):
+        import sys
+        with should.throw(SystemExit):
+            sys.exit(66)
+
+    def test_base_except_not_thrown(self):
+        with should_not.throw(SystemExit):
+            pass
+
 
 class NonEmptyConstructorException(Exception):
 

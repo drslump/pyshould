@@ -499,7 +499,10 @@ class RaisesError(BaseMatcher):
             if isinstance(item.exc_value, Exception):
                 self.thrown = item.exc_value
             elif item.exc_type is not None:
-                self.thrown = item.exc_type(*item.exc_value)
+                try:
+                    self.thrown = item.exc_type(*item.exc_value)
+                except TypeError:
+                    self.thrown = item.exc_type(item.exc_value)
             else:
                 return False
         else:
