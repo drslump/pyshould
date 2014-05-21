@@ -10,7 +10,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=['pyhamcrest'],
-    tests_requires=['pyhamcrest'],
+    tests_require=['pyhamcrest'],
     test_suite="tests",
     zip_safe=False,
     )
