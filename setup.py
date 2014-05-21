@@ -11,6 +11,6 @@ setup(
     include_package_data=True,
     install_requires=['pyhamcrest'],
     tests_require=['pyhamcrest'],
-    test_suite="tests",
+    test_suite="tests/__init__.py",
     zip_safe=False,
     )
