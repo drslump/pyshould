@@ -70,7 +70,7 @@ def unregister(matcher):
     """ Unregister a matcher (or alias) from the registry
     """
     # If it's a string handle it like an alias
-    if isinstance(matcher, six.string_types) and matcher in matchers:
+    if isinstance(matcher, text_types) and matcher in matchers:
         matcher = matchers[matcher]
 
     # Find all aliases associated to the matcher
@@ -349,7 +349,7 @@ class IsGenerator(BaseMatcher):
         import inspect
         return inspect.isgeneratorfunction(item)
 
-    def describe_to(self):
+    def describe_to(self, desc):
         desc.append_text('a generator function')
 
 
