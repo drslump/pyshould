@@ -496,10 +496,13 @@ class RaisesError(BaseMatcher):
         # support passing a context manager result
         if isinstance(item, ContextManagerResult):
             # Python <2.7 may provide a non exception value
-            if isinstance(item.exc_value, Exception) or isinstance(item.exc_value, BaseException):
+            if isinstance(item.exc_value, Exception):
                 self.thrown = item.exc_value
             elif item.exc_type is not None:
-                self.thrown = item.exc_type(*item.exc_value)
+                if isinstance(item.exc_value, list):
+                    self.thrown = item.exc_type(*item.exc_value)
+                else:
+                    self.thrown = item.exc_type(item.exc_value)
             else:
                 return False
         else:
