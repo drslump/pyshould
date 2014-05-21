@@ -375,12 +375,10 @@ class DslTestCase(unittest.TestCase):
         import sys
         with should.throw(SystemExit):
             sys.exit(66)
-    def test_base_except_not_thrown(self):
-        def foo():
-            return 'bar'
 
+    def test_base_except_not_thrown(self):
         with should_not.throw(SystemExit):
-            foo()
+            pass
 
 
 class NonEmptyConstructorException(Exception):
