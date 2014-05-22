@@ -80,6 +80,7 @@ class Expectation(object):
         matcher = self.evaluate()
 
         try:
+            value = self._transform(value)
             self._assertion(matcher, value)
         except AssertionError as ex:
             # By re-raising here the exception we reset the traceback
@@ -94,17 +95,6 @@ class Expectation(object):
             this method to apply a special configuration when performing the assertion.
             If the assertion fails it should raise an AssertionError.
         """
-
-        # Transform the value under test if we have registered a function to do so
-        if self.transform:
-            try:
-                value = self.transform(value)
-            except:
-                import sys
-                exc_type, exc_obj, exc_tb = sys.exc_info()
-                raise AssertionError('Error applying transformation <{0}>: {2}: {3}'.format(
-                    self.transform.__name__, value, exc_type.__name__, exc_obj)) 
-
         # To support the syntax `any_of(subject) | should ...` we check if the
         # value to check is an Expectation object and if it is we use the descriptor
         # protocol to bind the value's assertion logic to this expectation.
@@ -113,6 +103,20 @@ class Expectation(object):
             assertion(matcher, value.value)
         else:
             hc.assert_that(value, matcher)
+
+    def _transform(self, value):
+        """ Applies any defined transformation to the given value
+        """
+        if self.transform:
+            try:
+                value = self.transform(value)
+            except:
+                import sys
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                raise AssertionError('Error applying transformation <{0}>: {2}: {3}'.format(
+                    self.transform.__name__, value, exc_type.__name__, exc_obj))
+
+        return value
 
     def evaluate(self):
         """ Converts the current expression into a single matcher, applying
@@ -388,16 +392,22 @@ class ExpectationAny(Expectation):
     def _assertion(self, matcher, value):
         hc.assert_that(value, hc.has_item(matcher))
 
+    def _transform(self, value):
+        if self.transform:
+            value = [super(ExpectationAny, self)._transform(x) for x in value]
+        return value
 
-class ExpectationAll(Expectation):
+
+class ExpectationAll(ExpectationAny):
     """ Succeeds if all of the items in an iterable value pass the matcher """
 
     def _assertion(self, matcher, value):
         hc.assert_that(value, hc.only_contains(matcher))
 
 
-class ExpectationNone(Expectation):
+class ExpectationNone(ExpectationAny):
     """ Succeeds if none of the items in an iterable value passes the matcher """
 
     def _assertion(self, matcher, value):
         hc.assert_that(value, IsNot(hc.has_item(matcher)))
+

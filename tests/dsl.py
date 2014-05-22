@@ -290,6 +290,15 @@ class DslTestCase(unittest.TestCase):
         except AssertionError:
             pass
 
+    def test_apply_all(self):
+        import json
+        d = ('{"bar": 10}', '{"bar": 20}')
+
+        d | should_all(json.loads).have_key('bar')
+
+        should_all_json = should_all(json.loads)
+        d | should_all_json.have_key('bar')
+
     def test_equality(self):
         m = should.be_int.and_eq(1)
         self.assertEqual(1, m)
