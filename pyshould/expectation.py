@@ -308,8 +308,9 @@ class Expectation(object):
             arguments. If we're in deferred mode we don't resolve the matcher yet,
             it'll be done in the __ror__ overload.
         """
-        # When called directly (ie: should(foo).xxx) register the param as a transform 
-        if len(args) == 1 and hasattr(args[0], '__call__') and not self.expr and not self.matcher:
+        # When called directly (ie: should(foo).xxx) register the param as a transform
+        if (len(args) == 1 and hasattr(args[0], '__call__')
+                and not self.expr and not self.matcher):
             # We have to clone the expectation so we play fair with the `should` shortcut
             clone = self.clone()
             clone.transform = args[0]
@@ -371,7 +372,7 @@ class Expectation(object):
         exp = self.clone()
         if exp.matcher:
             exp._init_matcher()
-        
+
         if not exp.expr:
             return 'Uninitialized expectation <{0}>'.format(self.__class__.__name__)
 
@@ -410,4 +411,3 @@ class ExpectationNone(ExpectationAny):
 
     def _assertion(self, matcher, value):
         hc.assert_that(value, IsNot(hc.has_item(matcher)))
-
