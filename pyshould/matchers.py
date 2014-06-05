@@ -179,21 +179,22 @@ register(hc.close_to,
          'be_close_to')
 register(hc.greater_than,
          'be_greater_than', 'be_greater', 'be_gt',
-         'be_above', 
+         'be_above',
          'be_more_than', 'be_more')
 register(hc.greater_than_or_equal_to,
-         'be_greater_than_or_equal_to', 'be_greater_or_equal', 'be_ge', 
-         'be_more_than_or_equal', 'be_more_or_equal' 
+         'be_greater_than_or_equal_to', 'be_greater_or_equal', 'be_ge',
+         'be_more_than_or_equal', 'be_more_or_equal'
          'be_at_least')
 register(hc.less_than,
          'be_less_than', 'be_less', 'be_lt', 'be_below')
 register(hc.less_than_or_equal_to,
-         'be_less_than_or_equal_to', 'be_less_or_equal', 'be_le', 
+         'be_less_than_or_equal_to', 'be_less_or_equal', 'be_le',
          'be_at_most')
 register(hc.has_length,
          'have_length', 'have_len')
 register(hc.has_property,
-         'have_the_property', 'contain_the_property', 'have_the_prop', 'contain_the_prop')
+         'have_the_property', 'contain_the_property',
+         'have_the_prop', 'contain_the_prop')
 register(hc.has_string,
          'have_the_string', 'contain_the_string')
 register(hc.equal_to_ignoring_case,
@@ -532,9 +533,11 @@ class RaisesError(BaseMatcher):
 
     def describe_to(self, desc):
         if self.thrown and self.message:
-            desc.append_text('to raise an exception with message "%s"' % self.message)
+            desc.append_text('to raise an exception with message "%s"'
+                             % self.message)
         elif self.thrown and self.regex:
-            desc.append_text('to raise an exception matching /%s/' % self.regex)
+            desc.append_text('to raise an exception matching /%s/'
+                             % self.regex)
         else:
             desc.append_text('to raise an exception')
             if self.expected:
@@ -625,7 +628,7 @@ register(Changes,
 class Callback(BaseMatcher):
     """ Checks against an user supplied callback. The callback
         can should return True to indicate a successful match or
-        False to indicate an unsuccessful one. 
+        False to indicate an unsuccessful one.
     """
 
     def __init__(self, callback):
@@ -647,7 +650,8 @@ class Callback(BaseMatcher):
 
     def describe_to(self, desc):
         desc.append_text('passses callback ')
-        if isinstance(self.callback, type(lambda: None)) and self.callback.__name__ == '<lambda>':
+        if (isinstance(self.callback, type(lambda: None))
+                and self.callback.__name__ == '<lambda>'):
             desc.append_text(self.callback.__name__)
         else:
             desc.append_text('{0}'.format(self.callback))
@@ -699,7 +703,7 @@ class RegexMatcher(BaseMatcher):
     def _matches(self, item):
         # Make sure we are matching against a string
         hc.assert_that(item, IsString())
-        
+
         match = re.search(self.regex, item, self.flags)
         return match is not None
 

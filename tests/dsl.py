@@ -18,8 +18,10 @@ class DslTestCase(unittest.TestCase):
         )
 
         for kw in keywords:
-            self.assertTrue(kw in globals(), msg='keyword "%s" not found as global' % kw)
-            self.assertTrue(kw in dir(dsl), msg='keyword "%s" not found in dsl' % kw)
+            self.assertTrue(kw in globals(),
+                            msg='keyword "%s" not found as global' % kw)
+            self.assertTrue(kw in dir(dsl),
+                            msg='keyword "%s" not found in dsl' % kw)
 
     def test_expectations(self):
         self.assertIsInstance(should, Expectation)
@@ -90,12 +92,14 @@ class DslTestCase(unittest.TestCase):
         def nested_expression_ok():
             with should.throw(TypeError):
                 1 | should.equal(1)
-        self.assertRaisesRegexp(AssertionError, 'TypeError', nested_expression_ok)
+        self.assertRaisesRegexp(AssertionError,
+                                'TypeError', nested_expression_ok)
 
         def nested_expression_fail():
             with should.throw(TypeError):
                 1 | should.equal(2)
-        self.assertRaisesRegexp(AssertionError, '<2>', nested_expression_fail)
+        self.assertRaisesRegexp(AssertionError,
+                                '<2>', nested_expression_fail)
 
         with should.throw(TypeError):
             raise TypeError('foo')
@@ -153,7 +157,7 @@ class DslTestCase(unittest.TestCase):
         {} | should.be_empty
         ['foo'] | should_not.be_empty
         'foo' | should_not.be_empty
-        {'foo':'foo'} | should_not.be_empty
+        {'foo': 'foo'} | should_not.be_empty
 
     def test_matcher_composition(self):
         d = {'foo': 'bar'}
@@ -198,7 +202,8 @@ class DslTestCase(unittest.TestCase):
             pass
 
     def test_class_has_props(self):
-        d = type("CommentForm", (object,), {'text': 'textvalue', 'author': 'the_author'})
+        d = type("CommentForm", (object,),
+                 {'text': 'textvalue', 'author': 'the_author'})
 
         d | should.have_properties({
             'text': 'textvalue',
@@ -233,7 +238,8 @@ class DslTestCase(unittest.TestCase):
         d.added_text = 'textvalue'
         d.added_author = 'the_author'
 
-        d | should.have_attrs(added_text='textvalue', added_author=should.be_a_string())
+        d | should.have_attrs(added_text='textvalue',
+                              added_author=should.be_a_string())
 
     def test_object_has_dynamic_props_with_non_existing_kwargs(self):
         Cls = type("CommentForm", (object,), {})
@@ -241,7 +247,9 @@ class DslTestCase(unittest.TestCase):
         d.added_text = 'textvalue'
         d.added_author = 'the_author'
         with self.assertRaises(AssertionError):
-            d | should.have_attrs(added_text='textvalue', added_author=should.be_a_string(), fake='foo')
+            d | should.have_attrs(added_text='textvalue',
+                                  added_author=should.be_a_string(),
+                                  fake='foo')
 
     def test_has_props_non_class(self):
         d = "fail"
@@ -409,4 +417,4 @@ class NonEmptyConstructorException(Exception):
         return unicode(self).encode('utf-8')
 
     def __unicode__(self):
-        return 'Missing fields: %s' % (self.parameter)            
+        return 'Missing fields: %s' % (self.parameter)

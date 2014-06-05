@@ -16,7 +16,8 @@ class PatchTestCase(unittest.TestCase):
             and platform.python_implementation().lower() == 'cpython')
 
         if not is_cpython:
-            raise unittest.SkipTest('patch is only available under cpython, skipping test')
+            raise unittest.SkipTest(
+                'patch is only available under cpython, skipping test')
 
     def test_should(self):
         from pyshould.expectation import Expectation
@@ -45,13 +46,13 @@ class PatchTestCase(unittest.TestCase):
         None.should_not.eq(2)
 
     def test_should_all(self):
-        [1,2,3].should_all.be_int()
+        [1, 2, 3].should_all.be_int()
 
     def test_should_any(self):
-        [1,2,3].should_any.eq(2)
+        [1, 2, 3].should_any.eq(2)
 
     def test_should_none(self):
-        [1,2,3].should_none.eq(5)
+        [1, 2, 3].should_none.eq(5)
 
     def test_should_all_none(self):
         try:
