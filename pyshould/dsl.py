@@ -7,6 +7,7 @@ from pyshould.expectation import (
     ExpectationAll, ExpectationAny,
     ExpectationNone, OPERATOR
 )
+from pyshould.dumper import Dumper
 
 __author__ = "Ivan -DrSlump- Montes"
 __email__ = "drslump@pollinimini.net"
@@ -19,6 +20,9 @@ should_all = ExpectationAll(deferred=True, factory=True)
 should_any = ExpectationAny(deferred=True, factory=True)
 should_none = ExpectationNone(deferred=True, factory=True)
 should_either = Expectation(deferred=True, factory=True, def_op=OPERATOR.OR)
+
+# Dumper instance for debugging mocks
+dumper = Dumper()
 
 
 def it(value):

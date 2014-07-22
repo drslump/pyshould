@@ -334,10 +334,10 @@ class DslTestCase(unittest.TestCase):
 
     def test_mock(self):
         try:
-            from unittest.mock import Mock  # Python 3.3
+            from unittest.mock import Mock, patch  # Python 3.3
         except:
             try:
-                from mock import Mock
+                from mock import Mock, patch
             except:
                 raise unittest.SkipTest('Mock library not available, skipping test')
 
@@ -356,6 +356,10 @@ class DslTestCase(unittest.TestCase):
             AssertionError,
             lambda: mock.assert_called_with(should.any, should.greater_than(3))
         )
+
+        # Check we can wrap it even when implementing __or__
+        with patch.object(self, 'test_mock') as mock:
+            it(mock) | should.not_be_called
 
     def test_patch_mockito(self):
         import warnings
@@ -396,6 +400,27 @@ class DslTestCase(unittest.TestCase):
     def test_base_except_not_thrown(self):
         with should_not.throw(SystemExit):
             pass
+
+    def test_wrap_value(self):
+        it(10) | should.eq(10)
+
+    def test_dumper(self):
+        output = []
+        mockdumper = dumper(reporter=output.append)
+
+        data = {'foo': 'Foo', 'bar': 'Bar', 'baz': 'Baz'}
+        data | should.eq({
+            'foo': mockdumper(msg='this is foo'),
+            'bar': mockdumper,
+            'baz': mockdumper(should.start_with('B'), msg='BAZ!')
+        })
+
+        output.sort()
+        output | should.eq([
+            "'Bar'",
+            "BAZ!: 'Baz'",
+            "this is foo: 'Foo'",
+        ])
 
 
 class NonEmptyConstructorException(Exception):

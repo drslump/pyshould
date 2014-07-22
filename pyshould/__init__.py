@@ -19,5 +19,6 @@ __all__ = [
     'it',
     'all_of',
     'any_of',
-    'none_of'
+    'none_of',
+    'dumper'
 ]
