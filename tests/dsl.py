@@ -68,6 +68,8 @@ class DslTestCase(unittest.TestCase):
         self.assertRaises(AssertionError, lambda: all_of((1, 2)).equal(1))
         self.assertRaises(AssertionError, lambda: all_of(1, 2).equal(1))
 
+        all_of([1, 2]) | should.be_int
+
     def test_any_of(self):
         self.assertRaises(AssertionError, lambda: any_of([2, 2]).equal(1))
         self.assertRaises(AssertionError, lambda: any_of((2, 2)).equal(1))

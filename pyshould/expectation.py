@@ -73,10 +73,10 @@ class Expectation(object):
         """ Allows the use case: it(value) | should.xxx
             Specially useful to wrap mocks which override the __or__ operator
         """
-        if isinstance(rvalue, Expectation):
+        if isinstance(rvalue, Expectation) and self.__class__ is Expectation:
             return rvalue.__ror__(self.value)
 
-        raise TypeError('Cannot use an Expectation at left hand side of a | operator')
+        return NotImplemented
 
     def resolve(self, value=None):
         """ Resolve the current expression against the supplied value """
