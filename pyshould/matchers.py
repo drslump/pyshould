@@ -183,7 +183,7 @@ register(hc.greater_than,
          'be_more_than', 'be_more')
 register(hc.greater_than_or_equal_to,
          'be_greater_than_or_equal_to', 'be_greater_or_equal', 'be_ge',
-         'be_more_than_or_equal', 'be_more_or_equal'
+         'be_more_than_or_equal', 'be_more_or_equal',
          'be_at_least')
 register(hc.less_than,
          'be_less_than', 'be_less', 'be_lt', 'be_below')
