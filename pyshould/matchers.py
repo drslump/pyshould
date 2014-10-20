@@ -7,6 +7,7 @@ import hamcrest as hc
 from difflib import get_close_matches
 from hamcrest.core.base_matcher import BaseMatcher
 from hamcrest.library.collection.isdict_containingentries import IsDictContainingEntries
+from hamcrest.library.collection.issequence_containing import IsSequenceContainingEvery
 from hamcrest.core.helpers.wrap_matcher import wrap_matcher
 
 
@@ -766,3 +767,54 @@ class IsObjectContainingEntries(IsDictContainingEntries):
 register(IsObjectContainingEntries,
          'have_the_properties', 'contain_the_properties', 'have_the_attributes', 'contain_the_attributes',
          'have_props', 'contain_props', 'have_attrs', 'contain_attrs')
+
+
+class IsSequenceContainingEveryInOrderSparse(IsSequenceContainingEvery):
+    """
+    Matches if a list contains every given element in the same order but with
+    optional interleaved items.
+    No optional elements matching the required ones are allowed.
+    Mismatch description prioritizes missing items over wrong order.
+    e.g. [1, 3, 4] IsSequenceContainingEveryInOrder [1, 4]
+                   but NOT IsSequenceContainingEveryInOrder [4, 1]
+                   and NOT IsSequenceContainingEveryInOrder [1, 4, 4]
+    """
+
+    def __init__(self, *element_matchers):
+        delegates = [hc.has_item(e) for e in element_matchers]
+        self.matcher_all = hc.all_of(*delegates)
+        self.matcher_any = hc.any_of(*delegates)
+        self.matcher_order = hc.contains(*element_matchers)
+        self.order_seq = None
+
+    def _matches(self, sequence):
+        try:
+            seq = list(sequence)
+            if self.matcher_all.matches(seq):
+                self.order_seq = [i for i in seq if self.matcher_any.matches([i])]
+                return self.matcher_order.matches(self.order_seq)
+            else:
+                return False
+        except TypeError:
+            return False
+
+    def describe_mismatch(self, item, mismatch_description):
+        if self.order_seq is None:
+            mismatch_description.append_text(' instead of a ')
+            self.matcher_all.describe_mismatch(item, mismatch_description)
+        else:
+            self.matcher_order.describe_mismatch(self.order_seq, mismatch_description)
+            mismatch_description.append_text(
+                ' from candidate list elements: '
+            ).append_description_of(self.order_seq).append_text(
+                ' that satisfied those conditions from '
+            ).append_description_of(item)
+
+    def describe_to(self, description):
+        self.matcher_all.describe_to(description)
+        description.append_text(' in this specific order')
+
+
+register(IsSequenceContainingEveryInOrderSparse, 'contain_sparse_in_order',
+         'contain_in_order_sparse', 'have_every_in_order_sparse',
+         'have_in_order_sparse', 'contain_every_in_order_sparse')
