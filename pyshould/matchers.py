@@ -788,6 +788,7 @@ class IsSequenceContainingEveryInOrderSparse(IsSequenceContainingEvery):
         self.order_seq = None
 
     def _matches(self, sequence):
+        self.order_seq = None
         try:
             seq = list(sequence)
             if self.matcher_all.matches(seq):
@@ -815,6 +816,7 @@ class IsSequenceContainingEveryInOrderSparse(IsSequenceContainingEvery):
         description.append_text(' in this specific order')
 
 
-register(IsSequenceContainingEveryInOrderSparse, 'contain_sparse_in_order',
+register(IsSequenceContainingEveryInOrderSparse,
+         'contain_sparse', 'have_sparse', 'contain_sparse_in_order',
          'contain_in_order_sparse', 'have_every_in_order_sparse',
          'have_in_order_sparse', 'contain_every_in_order_sparse')

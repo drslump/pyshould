@@ -445,6 +445,11 @@ class DslTestCase(unittest.TestCase):
                 should.eq(1)
             )
 
+        with self.assertRaises(AssertionError):
+            [1] | should.contain_sparse_in_order(
+                should.eq(1), should.be_greater_than(7)
+            )
+
         [1, 4, 3, 3, 8, 6, 2] | should.contain_sparse_in_order(
             should.eq(1), should.be_greater_than(7)
         )
