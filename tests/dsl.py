@@ -424,6 +424,44 @@ class DslTestCase(unittest.TestCase):
             "this is foo: 'Foo'",
         ])
 
+    def test_contain_sparse_in_order(self):
+        with self.assertRaises(AssertionError):
+            [1, 4, 3, 3, 3, 6] | should.contain_sparse_in_order(
+                should.eq(1), should.be_greater_than(7)
+            )
+
+        with self.assertRaises(AssertionError):
+            [1, 4, 3, 3, 3, 8, 9] | should.contain_sparse_in_order(
+                should.eq(1), should.be_greater_than(7)
+            )
+
+        with self.assertRaises(AssertionError):
+            [9, 1] | should.contain_sparse_in_order(
+                should.eq(1), should.be_greater_than(7)
+            )
+
+        with self.assertRaises(AssertionError):
+            1 | should.contain_sparse_in_order(
+                should.eq(1)
+            )
+
+        with self.assertRaises(AssertionError):
+            [1] | should.contain_sparse_in_order(
+                should.eq(1), should.be_greater_than(7)
+            )
+
+        [1, 4, 3, 3, 8, 6, 2] | should.contain_sparse_in_order(
+            should.eq(1), should.be_greater_than(7)
+        )
+
+        [0, 1, 4, 3, 3, 8, 6, 2] | should.contain_sparse_in_order(
+            should.eq(1), should.be_greater_than(7)
+        )
+
+        (i for i in range(9)) | should.contain_sparse_in_order(
+            1, should.be_greater_than(7)
+        )
+
 
 class NonEmptyConstructorException(Exception):
 
