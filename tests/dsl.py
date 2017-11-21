@@ -274,6 +274,16 @@ class DslTestCase(unittest.TestCase):
             'author_field': 'the_author',
         })
 
+    def test_datetime_type_check(self):
+        from datetime import datetime
+
+        datetime.utcnow() | should.be_a_date()
+
+    def test_date_type_check(self):
+        from datetime import date
+
+        date.today() | should.be_a_date()
+
     def test_apply(self):
         import json
         d = '{"foo":"bar"}'

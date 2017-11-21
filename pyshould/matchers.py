@@ -3,6 +3,7 @@ Defines the registry of matchers and the standard set of matchers
 """
 
 import re
+from datetime import datetime, date
 import hamcrest as hc
 from difflib import get_close_matches
 from hamcrest.core.base_matcher import BaseMatcher
@@ -365,6 +366,12 @@ class IsClass(BaseMatcher):
         desc.append_text('a class')
 
 
+class IsDate(TypeMatcher):
+    """ Check if the value is a date """
+    types = (datetime, date)
+    expected = 'a date'
+
+
 register(IsInteger, 'be_an_integer', 'be_an_int')
 register(IsFloat, 'be_a_float')
 register(IsComplex, 'be_a_complex_number', 'be_a_complex')
@@ -383,6 +390,7 @@ register(IsFunction, 'be_a_function', 'be_a_func')
 register(IsBool, 'be_a_boolean', 'be_a_bool')
 register(IsGenerator, 'be_a_generator')
 register(IsClass, 'be_a_class')
+register(IsDate, 'be_a_date')
 
 
 class IsIterable(BaseMatcher):
